@@ -12,6 +12,7 @@
     :root {
       --navy: #0D1B2A;
       --navy2: #112240;
+      --navy3: #0a1628;
       --blue: #1565C0;
       --blue2: #1976D2;
       --cyan: #00B4D8;
@@ -26,6 +27,21 @@
       --text: #E8F0FE;
       --muted: #7B9CC4;
       --accent: #00B4D8;
+      --shadow: rgba(0, 0, 0, 0.5);
+    }
+
+    body.light-mode {
+      --navy: #f0f4f8;
+      --navy2: #ffffff;
+      --navy3: #e2e8f0;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+      --accent: #1565C0;
+      --shadow: rgba(0, 0, 0, 0.05);
     }
 
     * {
@@ -44,7 +60,7 @@
 
     /* ── TOPBAR ── */
     .topbar {
-      background: linear-gradient(90deg, var(--navy) 0%, #0a1628 100%);
+      background: linear-gradient(90deg, var(--navy) 0%, var(--navy3) 100%);
       border-bottom: 1px solid var(--border);
       padding: 0 28px;
       height: 60px;
@@ -202,12 +218,12 @@
     }
 
     .sidebar-item:hover {
-      background: rgba(21, 101, 192, .1);
+      background: rgba(21, 101, 192, 0.08);
       color: var(--text)
     }
 
     .sidebar-item.active {
-      background: rgba(21, 101, 192, .2);
+      background: rgba(21, 101, 192, 0.12);
       color: var(--cyan);
       border-left-color: var(--cyan);
     }
@@ -335,7 +351,7 @@
 
     /* ── PROGRESS BAR ── */
     .prog-wrap {
-      background: rgba(255, 255, 255, .08);
+      background: var(--navy3);
       border-radius: 4px;
       height: 6px;
       overflow: hidden
@@ -419,7 +435,7 @@
     }
 
     .gantt tr:hover td {
-      background: rgba(21, 101, 192, .06)
+      background: rgba(21, 101, 192, 0.04)
     }
 
     .gantt tr:last-child td {
@@ -487,7 +503,7 @@
     }
 
     .gantt-bar-outer {
-      background: rgba(255, 255, 255, .06);
+      background: var(--navy3);
       border-radius: 4px;
       height: 16px;
       position: relative;
@@ -509,7 +525,7 @@
       transform: translateY(-50%);
       font-size: 10px;
       font-weight: 700;
-      color: rgba(255, 255, 255, .9);
+      color: #fff;
     }
 
     /* ── PROJECT CARDS ── */
@@ -546,7 +562,7 @@
 
     .proj-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, .5);
+      box-shadow: 0 12px 30px var(--shadow);
       border-color: var(--border)
     }
 
@@ -1201,6 +1217,7 @@
       </div>
     </div>
     <div class="topbar-right">
+      <button class="btn btn-outline btn-sm" onclick="toggleTheme()" id="theme-toggle" title="Cambiar Tema" style="padding: 8px 10px; font-size: 16px;">🌙</button>
       <div class="search-box" style="width:auto">
         <input type="password" id="sync-url" placeholder="URL Google Script" style="width:120px"
           title="Pega aquí la URL de tu Web App de Google Apps Script" />
@@ -1581,6 +1598,29 @@
         const url = document.getElementById('sync-url').value;
         if (url) localStorage.setItem('pd_sync_url', url);
       } catch (e) { }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // THEME MANAGEMENT
+    // ═══════════════════════════════════════════════════════════════
+    function toggleTheme() {
+      const body = document.body;
+      const btn = document.getElementById('theme-toggle');
+      const isLight = body.classList.toggle('light-mode');
+      
+      btn.textContent = isLight ? '☀️' : '🌙';
+      localStorage.setItem('pd_theme', isLight ? 'light' : 'dark');
+      
+      // Feedback
+      toast(`Modo ${isLight ? 'Claro' : 'Oscuro'} activado`);
+    }
+
+    function loadTheme() {
+      const theme = localStorage.getItem('pd_theme');
+      if (theme === 'light') {
+        document.body.classList.add('light-mode');
+        document.getElementById('theme-toggle').textContent = '☀️';
+      }
     }
 
     async function syncWithGoogleSheets() {
@@ -2397,6 +2437,7 @@
     // ═══════════════════════════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════════════════════════
+    loadTheme();
     loadDB();
     renderOverview();
 
