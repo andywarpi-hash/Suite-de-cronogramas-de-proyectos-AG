@@ -1532,6 +1532,11 @@
 
   <script>
     // ═══════════════════════════════════════════════════════════════
+    // CONFIGURATION
+    // ═══════════════════════════════════════════════════════════════
+    const CONFIG_SYNC_URL = 'https://script.google.com/macros/s/AKfycbzIuTtZH9-BrAOzv4GAtnFKAMmRASs9SnWSxPYPIaBd7ByxKwXvbXdvgIzwtIyzIQYt/exec';
+
+    // ═══════════════════════════════════════════════════════════════
     // DATA STORE  (persisted via localStorage)
     // ═══════════════════════════════════════════════════════════════
     const STORE_KEY = 'pd_v2_data';
@@ -1579,8 +1584,12 @@
     }
 
     async function syncWithGoogleSheets() {
-      const url = document.getElementById('sync-url').value;
-      if (!url) { toast('Configura la URL de Google Script primero', 'error'); return; }
+      const url = CONFIG_SYNC_URL || document.getElementById('sync-url').value;
+      if (!url) {
+        if (CONFIG_SYNC_URL === '') console.log('Sincronización automática omitida: URL no configurada');
+        else toast('Configura la URL de Google Script primero', 'error');
+        return;
+      }
       toast('Sincronizando...', 'info');
       try {
         const res = await fetch(url);
@@ -1635,7 +1644,7 @@
     }
 
     async function pushToGoogleSheets() {
-      const url = document.getElementById('sync-url').value;
+      const url = CONFIG_SYNC_URL || document.getElementById('sync-url').value;
       if (!url) { toast('Configura la URL de Google Script primero', 'error'); return; }
       toast('Subiendo datos...', 'info');
       try {
@@ -2390,6 +2399,15 @@
     // ═══════════════════════════════════════════════════════════════
     loadDB();
     renderOverview();
+
+    // Auto-sync on load if URL is provided
+    if (CONFIG_SYNC_URL) {
+      const syncInput = document.getElementById('sync-url');
+      if (syncInput && syncInput.parentElement) {
+        syncInput.parentElement.style.display = 'none';
+      }
+      syncWithGoogleSheets();
+    }
   </script>
 </body>
 
