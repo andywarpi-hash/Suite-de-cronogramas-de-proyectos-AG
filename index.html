@@ -1040,9 +1040,11 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       margin-bottom: 24px;
-      overflow: hidden;
+      overflow: auto;
+      /* Unified scroll */
       display: flex;
       flex-direction: column;
+      position: relative;
     }
 
     .gantt-visual-header {
@@ -1051,7 +1053,7 @@
       border-bottom: 1px solid var(--border);
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 25;
     }
 
     .gantt-label-col {
@@ -1061,13 +1063,15 @@
       border-right: 1px solid var(--border);
       font-weight: 700;
       font-size: 12px;
-      background: var(--navy2)
+      background: var(--navy2);
+      position: sticky;
+      left: 0;
+      z-index: 30;
     }
 
     .gantt-days-scroll {
       flex: 1;
-      overflow-x: auto;
-      display: flex
+      display: flex;
     }
 
     .gantt-day-cell {
@@ -1094,8 +1098,8 @@
 
     .gantt-visual-body {
       flex: 1;
-      overflow-y: auto;
-      max-height: 600px
+      overflow: visible;
+      /* Let the wrap handle horizontal scroll */
     }
 
     .gantt-row-visual {
@@ -1121,7 +1125,12 @@
       border-right: 1px solid var(--border);
       height: 100%;
       display: flex;
-      align-items: center
+      align-items: center;
+      position: sticky;
+      left: 0;
+      z-index: 20;
+      background: var(--card);
+      /* Solid bg for sticky */
     }
 
     .gantt-bars-area {
@@ -1293,7 +1302,12 @@
         <div class="page-header">
           <div>
             <div class="page-title">Cronograma Gantt</div>
-            <div class="page-sub">Visualización temporal de actividades</div>
+            <div class="page-sub">Visualización temporal de proyectos</div>
+          </div>
+          <div class="actions-row">
+            <div class="search-box">
+              <input type="text" id="gantt-filter" placeholder="Buscar proyecto..." oninput="renderGanttVisual()">
+            </div>
           </div>
         </div>
         <div class="gantt-visual-wrap" id="gantt-visual-container">
@@ -1806,23 +1820,45 @@
     function renderGanttVisual() {
       const header = document.getElementById('gantt-visual-header');
       const body = document.getElementById('gantt-visual-body');
-      if (!DB.activities.length) {
+
+      const filterEl = document.getElementById('gantt-filter');
+      const filter = filterEl ? filterEl.value.toLowerCase() : '';
+
+      let projectsToShow = DB.projects.filter(p =>
+        p.name.toLowerCase().includes(filter) ||
+        p.id.toLowerCase().includes(filter) ||
+        (p.client && p.client.toLowerCase().includes(filter))
+      );
+
+      if (!projectsToShow.length) {
         header.innerHTML = '';
-        body.innerHTML = '<div style="padding:40px;color:var(--muted)">No hay actividades para mostrar en el cronograma.</div>';
+        body.innerHTML = '<div style="padding:40px;color:var(--muted)">No hay proyectos para mostrar con el filtro aplicado.</div>';
         return;
       }
 
       // Find date range
-      let minDate = new Date(Math.min(...DB.activities.map(a => new Date(a.start))));
-      let maxDate = new Date(Math.max(...DB.activities.map(a => new Date(a.end))));
+      let allDates = [];
+      projectsToShow.forEach(p => {
+        if (p.start) allDates.push(new Date(p.start));
+        if (p.end) allDates.push(new Date(p.end));
+      });
+
+      if (!allDates.length) {
+        header.innerHTML = '';
+        body.innerHTML = '<div style="padding:40px;color:var(--muted)">No hay fechas definidas para los proyectos filtrados.</div>';
+        return;
+      }
+
+      let minDate = new Date(Math.min(...allDates));
+      let maxDate = new Date(Math.max(...allDates));
 
       // Normalize dates to start/end of day
       minDate = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
       maxDate = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
 
       // Add some buffer
-      minDate.setDate(minDate.getDate() - 2);
-      maxDate.setDate(maxDate.getDate() + 5);
+      minDate.setDate(minDate.getDate() - 3);
+      maxDate.setDate(maxDate.getDate() + 7);
 
       const days = [];
       let curr = new Date(minDate);
@@ -1835,7 +1871,7 @@
 
       // Render Header
       header.innerHTML = `
-    <div class="gantt-label-col">Actividad / Proyecto</div>
+    <div class="gantt-label-col">Proyecto / Cliente</div>
     <div class="gantt-days-scroll">
       ${days.map(d => {
         const isWE = d.getDay() === 0 || d.getDay() === 6;
@@ -1850,10 +1886,10 @@
   `;
 
       // Render Body
-      body.innerHTML = DB.activities.map(a => {
-        const p = DB.projects.find(proj => proj.id === a.projId);
-        const start = new Date(a.start);
-        const end = new Date(a.end);
+      body.innerHTML = projectsToShow.map(p => {
+        const start = new Date(p.start);
+        const end = new Date(p.end);
+        const pct = projProgress(p.id);
 
         // Calculate offset and width
         const diffStart = Math.floor((start - minDate) / (1000 * 60 * 60 * 24));
@@ -1863,17 +1899,17 @@
         const width = duration * dayWidth;
 
         return `
-      <div class="gantt-row-visual">
-        <div class="gantt-act-label" title="${a.name}">
+      <div class="gantt-row-visual" onclick="showPage('project-detail','${p.id}')" style="cursor:pointer">
+        <div class="gantt-act-label" title="${p.name}">
           <div>
-            <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a.name}</div>
-            <div style="font-size:9px;color:var(--muted)">${p?.name || a.projId} ${p?.city ? `(${p.city})` : ''}</div>
+            <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#${p.color || '1565C0'}">${p.name}</div>
+            <div style="font-size:9px;color:var(--muted)">${p.client || ''} ${p.city ? `(${p.city})` : ''}</div>
           </div>
         </div>
         <div class="gantt-bars-area">
           ${days.map(() => `<div class="gantt-grid-line"></div>`).join('')}
-          <div class="gantt-bar-v" style="left:${left}px; width:${width}px; background:linear-gradient(90deg, #${p?.color || '1565C0'}, var(--cyan));" title="${a.name} (${a.pct}%)">
-            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.pct}%</span>
+          <div class="gantt-bar-v" style="left:${left}px; width:${width}px; background:linear-gradient(90deg, #${p.color || '1565C0'}, var(--cyan));" title="${p.name} (${pct}%)">
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${pct}%</span>
           </div>
         </div>
       </div>
