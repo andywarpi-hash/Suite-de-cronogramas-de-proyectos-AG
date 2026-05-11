@@ -1220,7 +1220,8 @@
       </div>
     </div>
     <div class="topbar-right">
-      <button class="btn btn-outline btn-sm" onclick="toggleTheme()" id="theme-toggle" title="Cambiar Tema" style="padding: 8px 10px; font-size: 16px;">🌙</button>
+      <button class="btn btn-outline btn-sm" onclick="toggleTheme()" id="theme-toggle" title="Cambiar Tema"
+        style="padding: 8px 10px; font-size: 16px;">🌙</button>
       <div class="search-box" style="width:auto">
         <input type="password" id="sync-url" placeholder="URL Google Script" style="width:120px"
           title="Pega aquí la URL de tu Web App de Google Apps Script" />
@@ -1610,10 +1611,10 @@
       const body = document.body;
       const btn = document.getElementById('theme-toggle');
       const isLight = body.classList.toggle('light-mode');
-      
+
       btn.textContent = isLight ? '☀️' : '🌙';
       localStorage.setItem('pd_theme', isLight ? 'light' : 'dark');
-      
+
       // Feedback
       toast(`Modo ${isLight ? 'Claro' : 'Oscuro'} activado`);
     }
@@ -1869,25 +1870,7 @@
     // ═══════════════════════════════════════════════════════════════
     // VISUAL GANTT (HTML)
     // ═══════════════════════════════════════════════════════════════
-             <div class="page-header">
-           <div>
-             <div class="page-title">Cronograma Gantt</div>
-             <div class="page-sub">Visualización temporal de proyectos</div>
-           </div>
-           <div class="actions-row">
--            <div class="search-box">
--              <input type="text" id="gantt-filter" placeholder="Buscar proyecto..." oninput="renderGanttVisual()"/>
--            </div>
-+            <div class="search-box">
-+              <input type="text" id="gantt-filter" placeholder="Buscar proyecto..." oninput="renderGanttVisual()"/>
-+            </div>
-+            <select id="gantt-scale" class="form-select" style="width:auto;" onchange="renderGanttVisual()">
-+              <option value="day">Día</option>
-+              <option value="week">Semana</option>
-+              <option value="month">Mes</option>
-+            </select>
-           </div>
-         </div>
+    function renderGanttVisual() {
       const header = document.getElementById('gantt-visual-header');
       const body = document.getElementById('gantt-visual-body');
 
