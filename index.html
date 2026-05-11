@@ -1869,7 +1869,25 @@
     // ═══════════════════════════════════════════════════════════════
     // VISUAL GANTT (HTML)
     // ═══════════════════════════════════════════════════════════════
-    function renderGanttVisual() {
+             <div class="page-header">
+           <div>
+             <div class="page-title">Cronograma Gantt</div>
+             <div class="page-sub">Visualización temporal de proyectos</div>
+           </div>
+           <div class="actions-row">
+-            <div class="search-box">
+-              <input type="text" id="gantt-filter" placeholder="Buscar proyecto..." oninput="renderGanttVisual()"/>
+-            </div>
++            <div class="search-box">
++              <input type="text" id="gantt-filter" placeholder="Buscar proyecto..." oninput="renderGanttVisual()"/>
++            </div>
++            <select id="gantt-scale" class="form-select" style="width:auto;" onchange="renderGanttVisual()">
++              <option value="day">Día</option>
++              <option value="week">Semana</option>
++              <option value="month">Mes</option>
++            </select>
+           </div>
+         </div>
       const header = document.getElementById('gantt-visual-header');
       const body = document.getElementById('gantt-visual-body');
 
