@@ -16,9 +16,9 @@
       --blue: #1565C0;
       --blue2: #1976D2;
       --cyan: #00B4D8;
-      --green: #00C853;
-      --yellow: #FFD600;
-      --red: #FF1744;
+      --green: #00c853c8;
+      --yellow: #ffd500e4;
+      --red: #ff1745a1;
       --orange: #FF6D00;
       --bg: #080F1A;
       --surface: #0D1B2A;
@@ -1222,18 +1222,11 @@
     <div class="topbar-right">
       <button class="btn btn-outline btn-sm" onclick="toggleTheme()" id="theme-toggle" title="Cambiar Tema"
         style="padding: 8px 10px; font-size: 16px;">🌙</button>
-      <div class="search-box" style="width:auto">
-        <input type="password" id="sync-url" placeholder="URL Google Script" style="width:120px"
-          title="Pega aquí la URL de tu Web App de Google Apps Script" />
-      </div>
+      <button class="btn btn-outline btn-sm" onclick="openGoogleSheet()" title="Abrir Google Sheets sincronizado">🌐 Ir a Database</button>
       <button class="btn btn-outline btn-sm" onclick="syncWithGoogleSheets()" title="Traer datos de Google Sheets">🔄
         Sincronizar</button>
       <button class="btn btn-outline btn-sm" onclick="pushToGoogleSheets()" title="Enviar datos a Google Sheets">📤
         Subir Datos</button>
-      <label class="btn btn-outline" style="cursor:pointer">
-        ↑ Importar Excel
-        <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="importExcel(event)" />
-      </label>
       <button class="btn btn-primary" onclick="exportExcel()">↓ Exportar Excel</button>
       <button class="btn btn-success" onclick="openNewProjectModal()">+ Nuevo Proyecto</button>
     </div>
@@ -1288,34 +1281,6 @@
             <div class="bar-chart" id="bar-chart"></div>
           </div>
         </div>
-
-        <div class="gantt-container">
-          <div class="gantt-header-row">
-            <span class="gantt-title">Todas las Actividades — Vista Consolidada</span>
-            <div class="search-box">
-              <span style="color:var(--muted)">🔍</span>
-              <input type="text" placeholder="Buscar actividad…" oninput="filterTable(this.value)" />
-            </div>
-          </div>
-          <div class="gantt-scroll">
-            <table class="gantt">
-              <thead>
-                <tr>
-                  <th>Actividad</th>
-                  <th>Proyecto</th>
-                  <th>Ciudad / PDV</th>
-                  <th>Encargado</th>
-                  <th>Estado</th>
-                  <th>Inicio</th>
-                  <th>Fin</th>
-                  <th style="min-width:180px">Avance</th>
-                  <th>Cumplimiento</th>
-                </tr>
-              </thead>
-              <tbody id="global-tbody"></tbody>
-            </table>
-          </div>
-        </div>
       </div>
 
       <!-- ── PAGE: GANTT VISUAL ── -->
@@ -1329,7 +1294,8 @@
             <div class="search-box">
               <input type="text" id="gantt-filter" placeholder="Buscar proyecto..." oninput="renderGanttVisual()">
             </div>
-            <select id="gantt-scale" class="btn btn-outline" onchange="renderGanttVisual()" style="height:38px; padding:0 12px; font-family:Rajdhani; font-weight:600; font-size:13px; cursor:pointer;">
+            <select id="gantt-scale" class="btn btn-outline" onchange="renderGanttVisual()"
+              style="height:38px; padding:0 12px; font-family:Rajdhani; font-weight:600; font-size:13px; cursor:pointer;">
               <option value="day">Vista por Día</option>
               <option value="week">Vista por Semana</option>
               <option value="month">Vista por Mes</option>
@@ -1408,6 +1374,7 @@
           <div style="padding:20px">
             <p style="font-size:13px;color:var(--muted);margin-bottom:16px">El archivo Excel debe tener dos hojas
               nombradas exactamente así:</p>
+            <p style="font-size:12px;color:#82B1FF;margin-bottom:16px">No se debe modificar la hoja "Estado/Colores"; la sincronización principal utiliza solo las hojas <strong>PROYECTOS</strong> y <strong>ACTIVIDADES</strong>.</p>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
               <div>
                 <p style="font-size:12px;font-weight:700;color:var(--cyan);margin-bottom:8px;letter-spacing:1px">HOJA:
@@ -1451,11 +1418,11 @@
             placeholder="PROJ-004" /></div>
         <div class="form-group"><label class="form-label">Estado</label>
           <select class="form-select" id="fi-status">
-            <option>Planificado</option>
-            <option>En curso</option>
-            <option>Completado</option>
-            <option>En pausa</option>
-            <option>Cancelado</option>
+            <option>Presupuesto</option>
+            <option>Licitación</option>
+            <option>Ejecución</option>
+            <option>Entrega</option>
+            <option>En espera</option>
           </select>
         </div>
         <div class="form-group form-full"><label class="form-label">Nombre del Proyecto</label><input class="form-input"
@@ -1519,11 +1486,11 @@
             class="form-input" id="ai-enc" placeholder="Nombre (Empresa)" /></div>
         <div class="form-group"><label class="form-label">Estado</label>
           <select class="form-select" id="ai-status">
-            <option>Planificado</option>
-            <option>En curso</option>
-            <option>Completado</option>
-            <option>En pausa</option>
-            <option>Cancelado</option>
+            <option>Presupuesto</option>
+            <option>Licitación</option>
+            <option>Ejecución</option>
+            <option>Entrega</option>
+            <option>En espera</option>
           </select>
         </div>
         <div class="form-group"><label class="form-label">Cumplimiento</label>
@@ -1562,6 +1529,47 @@
     // ═══════════════════════════════════════════════════════════════
     const CONFIG_SYNC_URL = 'https://script.google.com/macros/s/AKfycbzIuTtZH9-BrAOzv4GAtnFKAMmRASs9SnWSxPYPIaBd7ByxKwXvbXdvgIzwtIyzIQYt/exec';
 
+    // Estados y Colores Oficiales
+    const STATUS_COLORS = {
+      'Presupuesto': '#4F6D7A',
+      'Licitación': '#1B5E20',
+      'Ejecución': '#D4A017',
+      'Entrega': '#D32F2F',
+      'En espera': '#9E9E9E'
+    };
+
+    function applyStatusColors(colors) {
+      if (!colors || typeof colors !== 'object') return;
+      Object.entries(colors).forEach(([key, value]) => {
+        if (typeof value === 'string' && value.trim()) {
+          STATUS_COLORS[key.trim()] = value.trim();
+        }
+      });
+    }
+
+    function getStatusKey(s) {
+      if (!s) return 'En espera';
+      const norm = s.trim().toLowerCase();
+      if (norm.includes('presupuesto')) return 'Presupuesto';
+      if (norm.includes('licitacion') || norm.includes('licitación')) return 'Licitación';
+      if (norm.includes('ejecucion') || norm.includes('ejecución') || norm.includes('en curso') || norm.includes('progreso') || norm.includes('en progreso')) return 'Ejecución';
+      if (norm.includes('entrega') || norm.includes('completado')) return 'Entrega';
+      if (norm.includes('espera') || norm.includes('pausa') || norm.includes('planificado') || norm.includes('cancelado') || norm.includes('pendiente')) return 'En espera';
+      return 'En espera';
+    }
+
+    function getStatusColor(s) {
+      const key = getStatusKey(s);
+      return STATUS_COLORS[key] || '#9E9E9E';
+    }
+
+    function getProjectProgress(p) {
+      if (p.pct !== undefined) return +p.pct;
+      if (p.porcentaje_avance !== undefined) return +p.porcentaje_avance;
+      if (p.PORCENTAJE_AVANCE !== undefined) return +p.PORCENTAJE_AVANCE;
+      return projProgress(p.id);
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // DATA STORE  (persisted via localStorage)
     // ═══════════════════════════════════════════════════════════════
@@ -1572,28 +1580,26 @@
       try {
         const raw = localStorage.getItem(STORE_KEY);
         if (raw) { DB = JSON.parse(raw); }
-        const url = localStorage.getItem('pd_sync_url');
-        if (url) document.getElementById('sync-url').value = url;
-        if (!raw) {
-          // Set sample data if nothing is in localStorage
+        if (!raw && !CONFIG_SYNC_URL) {
+          // Set sample data only when no sync backend is configured
           DB = {
             projects: [
-              { id: 'PROJ-001', name: 'REEMPLAZO SERPENTINES CLIMATEC', client: 'CLIMATEC S.A.', city: 'Bogotá', pdvCode: 'PDV-001', pdvName: 'Centro Comercial Andino', manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', start: '2026-02-02', end: '2026-03-24', status: 'En curso', desc: 'Reemplazo completo de serpentines en planta de refrigeración', color: '1565C0' },
-              { id: 'PROJ-002', name: 'INSTALACION CHILLER NORTE', client: 'FRIGOTEC LTDA', city: 'Medellín', pdvCode: 'PDV-015', pdvName: 'Planta Industrial Norte', manager: 'Ing. Maria López', leader: 'Carlos Rueda', start: '2026-03-01', end: '2026-05-15', status: 'Planificado', desc: 'Instalación de nuevo sistema chiller en planta norte', color: '0D47A1' },
-              { id: 'PROJ-003', name: 'MANTENIMIENTO PREVENTIVO Q1', client: 'INDFRIO S.A.', city: 'Cali', pdvCode: 'PDV-088', pdvName: 'Almacén Central Cali', manager: 'Ing. Roberto Silva', leader: 'Ana Torres', start: '2026-01-10', end: '2026-01-31', status: 'Completado', desc: 'Mantenimiento preventivo trimestral', color: '1B5E20' },
+              { id: 'PROJ-001', name: 'REEMPLAZO SERPENTINES CLIMATEC', client: 'CLIMATEC S.A.', city: 'Bogotá', pdvCode: 'PDV-001', pdvName: 'Centro Comercial Andino', manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', start: '2026-02-02', end: '2026-03-24', status: 'Ejecución', desc: 'Reemplazo completo de serpentines en planta de refrigeración', color: '1565C0' },
+              { id: 'PROJ-002', name: 'INSTALACION CHILLER NORTE', client: 'FRIGOTEC LTDA', city: 'Medellín', pdvCode: 'PDV-015', pdvName: 'Planta Industrial Norte', manager: 'Ing. Maria López', leader: 'Carlos Rueda', start: '2026-03-01', end: '2026-05-15', status: 'Presupuesto', desc: 'Instalación de nuevo sistema chiller en planta norte', color: '0D47A1' },
+              { id: 'PROJ-003', name: 'MANTENIMIENTO PREVENTIVO Q1', client: 'INDFRIO S.A.', city: 'Cali', pdvCode: 'PDV-088', pdvName: 'Almacén Central Cali', manager: 'Ing. Roberto Silva', leader: 'Ana Torres', start: '2026-01-10', end: '2026-01-31', status: 'Entrega', desc: 'Mantenimiento preventivo trimestral', color: '1B5E20' },
             ],
             activities: [
-              { id: 'ACT-001', projId: 'PROJ-001', name: 'FABRICACION DE SERPENTINES', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Completado', start: '2026-02-02', end: '2026-03-18', pct: 100, cum: 'COMPLETADO', obs: '' },
-              { id: 'ACT-002', projId: 'PROJ-001', name: 'ENTREGA DE SERPENTINES', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Completado', start: '2026-03-09', end: '2026-03-18', pct: 100, cum: 'COMPLETADO', obs: '' },
-              { id: 'ACT-003', projId: 'PROJ-001', name: 'PRUEBA DE VALVULAS', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Completado', start: '2026-03-14', end: '2026-03-25', pct: 100, cum: 'COMPLETADO', obs: '' },
-              { id: 'ACT-004', projId: 'PROJ-001', name: 'DESMONTE DE SERPENTINES DETERIORADOS', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Completado', start: '2026-03-09', end: '2026-03-18', pct: 100, cum: 'COMPLETADO', obs: '' },
-              { id: 'ACT-005', projId: 'PROJ-001', name: 'IZAJE DE SERPENTINES NUEVOS (1)', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Completado', start: '2026-03-09', end: '2026-03-10', pct: 100, cum: 'COMPLETADO', obs: '' },
-              { id: 'ACT-006', projId: 'PROJ-001', name: 'IZAJE DE SERPENTINES NUEVOS (2)', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Completado', start: '2026-03-17', end: '2026-03-19', pct: 100, cum: 'COMPLETADO', obs: '' },
-              { id: 'ACT-007', projId: 'PROJ-001', name: 'INSTALACION DE SERPENTINES NUEVOS', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Completado', start: '2026-03-10', end: '2026-03-21', pct: 100, cum: 'COMPLETADO', obs: '' },
-              { id: 'ACT-008', projId: 'PROJ-001', name: 'PRUEBAS OPERATIVAS', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Completado', start: '2026-03-21', end: '2026-03-22', pct: 100, cum: 'COMPLETADO', obs: '' },
-              { id: 'ACT-009', projId: 'PROJ-001', name: 'CIERRE DE PROYECTO', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'En curso', start: '2026-03-23', end: '2026-03-24', pct: 80, cum: 'EN PROGRESO', obs: 'Pendiente informe final' },
-              { id: 'ACT-010', projId: 'PROJ-002', name: 'LEVANTAMIENTO DE INFORMACIÓN', priority: 2, manager: 'Ing. Maria López', leader: 'Carlos Rueda', enc: 'Pedro Gómez', status: 'Planificado', start: '2026-03-01', end: '2026-03-10', pct: 0, cum: 'PENDIENTE', obs: '' },
-              { id: 'ACT-011', projId: 'PROJ-002', name: 'DISEÑO INGENIERÍA', priority: 2, manager: 'Ing. Maria López', leader: 'Carlos Rueda', enc: 'Pedro Gómez', status: 'Planificado', start: '2026-03-11', end: '2026-03-25', pct: 0, cum: 'PENDIENTE', obs: '' },
+              { id: 'ACT-001', projId: 'PROJ-001', name: 'FABRICACION DE SERPENTINES', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Entrega', start: '2026-02-02', end: '2026-03-18', pct: 100, cum: 'COMPLETADO', obs: '' },
+              { id: 'ACT-002', projId: 'PROJ-001', name: 'ENTREGA DE SERPENTINES', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Entrega', start: '2026-03-09', end: '2026-03-18', pct: 100, cum: 'COMPLETADO', obs: '' },
+              { id: 'ACT-003', projId: 'PROJ-001', name: 'PRUEBA DE VALVULAS', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Entrega', start: '2026-03-14', end: '2026-03-25', pct: 100, cum: 'COMPLETADO', obs: '' },
+              { id: 'ACT-004', projId: 'PROJ-001', name: 'DESMONTE DE SERPENTINES DETERIORADOS', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Entrega', start: '2026-03-09', end: '2026-03-18', pct: 100, cum: 'COMPLETADO', obs: '' },
+              { id: 'ACT-005', projId: 'PROJ-001', name: 'IZAJE DE SERPENTINES NUEVOS (1)', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Entrega', start: '2026-03-09', end: '2026-03-10', pct: 100, cum: 'COMPLETADO', obs: '' },
+              { id: 'ACT-006', projId: 'PROJ-001', name: 'IZAJE DE SERPENTINES NUEVOS (2)', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Entrega', start: '2026-03-17', end: '2026-03-19', pct: 100, cum: 'COMPLETADO', obs: '' },
+              { id: 'ACT-007', projId: 'PROJ-001', name: 'INSTALACION DE SERPENTINES NUEVOS', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Entrega', start: '2026-03-10', end: '2026-03-21', pct: 100, cum: 'COMPLETADO', obs: '' },
+              { id: 'ACT-008', projId: 'PROJ-001', name: 'PRUEBAS OPERATIVAS', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Entrega', start: '2026-03-21', end: '2026-03-22', pct: 100, cum: 'COMPLETADO', obs: '' },
+              { id: 'ACT-009', projId: 'PROJ-001', name: 'CIERRE DE PROYECTO', priority: 3, manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', enc: 'Jorge Vargas (CLIMATEC)', status: 'Ejecución', start: '2026-03-23', end: '2026-03-24', pct: 80, cum: 'EN PROGRESO', obs: 'Pendiente informe final' },
+              { id: 'ACT-010', projId: 'PROJ-002', name: 'LEVANTAMIENTO DE INFORMACIÓN', priority: 2, manager: 'Ing. Maria López', leader: 'Carlos Rueda', enc: 'Pedro Gómez', status: 'Presupuesto', start: '2026-03-01', end: '2026-03-10', pct: 0, cum: 'PENDIENTE', obs: '' },
+              { id: 'ACT-011', projId: 'PROY-002', name: 'DISEÑO INGENIERÍA', priority: 2, manager: 'Ing. Maria López', leader: 'Carlos Rueda', enc: 'Pedro Gómez', status: 'Presupuesto', start: '2026-03-11', end: '2026-03-25', pct: 0, cum: 'PENDIENTE', obs: '' },
             ]
           };
           saveDB();
@@ -1604,9 +1610,17 @@
     function saveDB() {
       try {
         localStorage.setItem(STORE_KEY, JSON.stringify(DB));
-        const url = document.getElementById('sync-url').value;
-        if (url) localStorage.setItem('pd_sync_url', url);
       } catch (e) { }
+    }
+
+    const CONFIG_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1JHBK49esAc9zOfkOosr3AxI1_yBTrZjpTRL98XYqJnc/edit?gid=185776672#gid=185776672';
+
+    function openGoogleSheet() {
+      if (!CONFIG_SHEET_URL) {
+        toast('URL de Google Sheets no configurada', 'error');
+        return;
+      }
+      window.open(CONFIG_SHEET_URL, '_blank');
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1633,10 +1647,9 @@
     }
 
     async function syncWithGoogleSheets() {
-      const url = CONFIG_SYNC_URL || document.getElementById('sync-url').value;
+      const url = CONFIG_SYNC_URL;
       if (!url) {
-        if (CONFIG_SYNC_URL === '') console.log('Sincronización automática omitida: URL no configurada');
-        else toast('Configura la URL de Google Script primero', 'error');
+        console.log('Sincronización automática omitida: URL no configurada');
         return;
       }
       toast('Sincronizando...', 'info');
@@ -1645,6 +1658,9 @@
         const data = await res.json();
 
         // Normalización de datos (en caso de que vengan con llaves en mayúsculas del script anterior)
+        if (data.statusColors) applyStatusColors(data.statusColors);
+        if (data.status_colors) applyStatusColors(data.status_colors);
+
         if (data.projects) {
           data.projects = data.projects.map(p => ({
             id: p.id || p.ID || p.ID_PROYECTO || '',
@@ -1657,9 +1673,9 @@
             leader: p.leader || p.Lider || p.LIDER_PROYECTO || '',
             start: p.start || p.Inicio || p.FECHA_INICIO || '',
             end: p.end || p.Fin || p.FECHA_FIN || '',
-            status: p.status || p.Estado || p.ESTADO || 'Planificado',
+            status: p.status || p.Estado || p.ESTADO || p.STATUS || p.Status || 'Planificado',
             desc: p.desc || p.Descripcion || p.DESCRIPCION || '',
-            color: p.color || p.Color || p.COLOR_HEX || '1565C0'
+            color: getStatusColor(p.status || p.Estado || p.ESTADO || p.STATUS || p.Status || 'Planificado')
           }));
         }
         if (data.activities) {
@@ -1671,11 +1687,11 @@
             manager: a.manager || a.Responsable || a.JEFE_PROYECTO || '',
             leader: a.leader || a.Lider || a.LIDER_PROYECTO || '',
             enc: a.enc || a.Encargado || a.ENCARGADO || '',
-            status: a.status || a.Estado || a.ESTADO || 'Planificado',
+            status: a.status || a.Estado || a.ESTADO || a.STATUS || a.Status || 'Planificado',
             start: a.start || a.Inicio || a.FECHA_INICIO || '',
             end: a.end || a.Fin || a.FECHA_FIN || '',
-            pct: a.pct !== undefined ? a.pct : (a.Progreso !== undefined ? a.Progreso : (a.PORCENTAJE_AVANCE || 0)),
-            cum: a.cum || a.Cumplimiento || a.CUMPLIMIENTO || 'PENDIENTE',
+            pct: a.pct !== undefined ? a.pct : (a.progreso !== undefined ? a.progreso : (a.Progreso !== undefined ? a.Progreso : (a.porcentaje_avance !== undefined ? a.porcentaje_avance : (a.PORCENTAJE_AVANCE || 0)))),
+            cum: a.cum || a.Cumplimiento || a.cumplimiento || a.CUMPLIMIENTO || 'PENDIENTE',
             obs: a.obs || a.Observaciones || a.OBSERVACIONES || ''
           }));
         }
@@ -1693,8 +1709,8 @@
     }
 
     async function pushToGoogleSheets() {
-      const url = CONFIG_SYNC_URL || document.getElementById('sync-url').value;
-      if (!url) { toast('Configura la URL de Google Script primero', 'error'); return; }
+      const url = CONFIG_SYNC_URL;
+      if (!url) { console.log('URL de sincronización no configurada'); return; }
       toast('Subiendo datos...', 'info');
       try {
         const res = await fetch(url, {
@@ -1717,8 +1733,9 @@
     function projActivities(projId) { return DB.activities.filter(a => a.projId === projId); }
     function projProgress(projId) { const acts = projActivities(projId); if (!acts.length) return 0; return Math.round(acts.reduce((s, a) => s + (+a.pct || 0), 0) / acts.length); }
     function statusBadge(s) {
-      const map = { 'Completado': 'badge-green', 'En curso': 'badge-yellow', 'Planificado': 'badge-blue', 'En pausa': 'badge-red', 'Cancelado': 'badge-gray', 'COMPLETADO': 'badge-green', 'EN PROGRESO': 'badge-yellow', 'PENDIENTE': 'badge-gray', 'CANCELADO': 'badge-red' };
-      return `<span class="badge ${map[s] || 'badge-gray'}">${s}</span>`;
+      const key = getStatusKey(s);
+      const color = STATUS_COLORS[key] || '#9E9E9E';
+      return `<span class="badge" style="background:${color}22; color:${color}; border:1px solid ${color}44;">${key}</span>`;
     }
     function progColor(pct) { if (pct >= 100) return 'prog-green'; if (pct >= 60) return 'prog-blue'; if (pct >= 30) return 'prog-yellow'; return 'prog-red'; }
     function barColor(pct) { if (pct >= 100) return 'linear-gradient(90deg,#00C853,#69F0AE)'; if (pct >= 60) return 'linear-gradient(90deg,#1565C0,#00B4D8)'; if (pct >= 30) return 'linear-gradient(90deg,#FFD600,#FF6D00)'; return 'linear-gradient(90deg,#FF1744,#FF6090)'; }
@@ -1753,11 +1770,12 @@
       const list = document.getElementById('proj-sidebar-list');
       document.getElementById('proj-count-badge').textContent = DB.projects.length;
       list.innerHTML = DB.projects.map(p => {
-        const pct = projProgress(p.id);
+        const pct = getProjectProgress(p);
+        const statusColor = getStatusColor(p.status);
         return `<div class="sidebar-item" onclick="showPage('project-detail','${p.id}')" id="nav-proj-${p.id}">
-      <span class="proj-dot" style="background:#${p.color || '1565C0'}"></span>
+      <span class="proj-dot" style="background:${statusColor}"></span>
       <span style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.name}</span>
-      <span class="proj-badge" style="background:#${p.color || '1565C0'}">${pct}%</span>
+      <span class="proj-badge" style="background:${statusColor}">${pct}%</span>
     </div>`;
       }).join('');
     }
@@ -1767,74 +1785,93 @@
     // ═══════════════════════════════════════════════════════════════
     function renderOverview() {
       renderSidebar();
-      // Stats
-      const total = DB.projects.length;
-      const active = DB.projects.filter(p => p.status === 'En curso').length;
-      const done = DB.projects.filter(p => p.status === 'Completado').length;
-      const totalActs = DB.activities.length;
-      const doneActs = DB.activities.filter(a => a.cum === 'COMPLETADO').length;
-      const globalPct = DB.activities.length ? Math.round(DB.activities.reduce((s, a) => s + (+a.pct || 0), 0) / DB.activities.length) : 0;
 
-      document.getElementById('stats-grid').innerHTML = `
-    <div class="stat-card" style="--accent-color:#00B4D8"><div class="stat-value">${total}</div><div class="stat-label">Proyectos Totales</div></div>
-    <div class="stat-card" style="--accent-color:#FFD600"><div class="stat-value">${active}</div><div class="stat-label">En Curso</div></div>
-    <div class="stat-card" style="--accent-color:#00C853"><div class="stat-value">${done}</div><div class="stat-label">Completados</div></div>
-    <div class="stat-card" style="--accent-color:#1565C0"><div class="stat-value">${totalActs}</div><div class="stat-label">Actividades Totales</div>
-      <div class="stat-sub" style="color:var(--muted)">${doneActs} completadas</div></div>
-    <div class="stat-card" style="--accent-color:${globalPct >= 70 ? '#00C853' : globalPct >= 40 ? '#FFD600' : '#FF1744'}">
-      <div class="stat-value">${globalPct}%</div>
-      <div class="stat-label">Avance Global</div>
-      <div class="prog-wrap" style="margin-top:8px"><div class="prog-bar ${progColor(globalPct)}" style="width:${globalPct}%"></div></div>
-    </div>`;
+      const states = Object.keys(STATUS_COLORS);
+      document.getElementById('stats-grid').innerHTML = states.map(state => {
+        const projectsInState = DB.projects.filter(p => getStatusKey(p.status) === state);
+        const count = projectsInState.length;
+        const avgPct = count > 0 ? Math.round(projectsInState.reduce((sum, p) => sum + getProjectProgress(p), 0) / count) : 0;
+        const color = STATUS_COLORS[state];
+
+        return `
+          <div class="stat-card" style="--accent-color:${color}">
+            <div class="stat-value">${count}</div>
+            <div class="stat-label">${state}</div>
+            <div style="margin-top:12px">
+              <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px">
+                <span style="color:var(--muted)">Avance Promedio</span>
+                <span style="font-weight:700;color:${color}">${avgPct}%</span>
+              </div>
+              <div class="prog-wrap">
+                <div class="prog-bar" style="width:${avgPct}%;background:${color}"></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
 
       // Donut chart
       renderDonut();
       // Bar chart
       renderBarChart();
-      // Global table
-      renderGlobalTable(DB.activities);
     }
 
     function renderDonut() {
-      const counts = {};
-      const colors = { 'En curso': '#FFD600', 'Completado': '#00C853', 'Planificado': '#1565C0', 'En pausa': '#FF6D00', 'Cancelado': '#FF1744' };
-      DB.projects.forEach(p => { counts[p.status] = (counts[p.status] || 0) + 1; });
-      const total = DB.projects.length || 1;
+      const counts = {
+        'Presupuesto': 0,
+        'Licitación': 0,
+        'Ejecución': 0,
+        'Entrega': 0,
+        'En espera': 0
+      };
+      DB.projects.forEach(p => {
+        const key = getStatusKey(p.status);
+        counts[key] = (counts[key] || 0) + 1;
+      });
+      const total = DB.projects.length;
       const svg = document.getElementById('donut-svg');
       const legend = document.getElementById('donut-legend');
       let cumAngle = -Math.PI / 2, r = 38, cx = 50, cy = 50, sw = 14;
       let paths = '';
-      const entries = Object.entries(counts);
-      entries.forEach(([status, cnt]) => {
-        const angle = (cnt / total) * 2 * Math.PI;
-        const x1 = cx + r * Math.cos(cumAngle), y1 = cy + r * Math.sin(cumAngle);
-        const x2 = cx + r * Math.cos(cumAngle + angle), y2 = cy + r * Math.sin(cumAngle + angle);
-        const large = angle > Math.PI ? 1 : 0;
-        const color = colors[status] || '#888';
-        paths += `<path d="M${cx} ${cy} L${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2} Z" fill="${color}" opacity=".85"/>`;
-        cumAngle += angle;
-      });
+
+      const activeEntries = Object.entries(counts).filter(([s, c]) => c > 0);
+      if (activeEntries.length === 0) {
+        paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#9E9E9E" opacity=".2"/>`;
+      } else {
+        activeEntries.forEach(([status, cnt]) => {
+          const angle = (cnt / total) * 2 * Math.PI;
+          const x1 = cx + r * Math.cos(cumAngle), y1 = cy + r * Math.sin(cumAngle);
+          const x2 = cx + r * Math.cos(cumAngle + angle), y2 = cy + r * Math.sin(cumAngle + angle);
+          const large = angle > Math.PI ? 1 : 0;
+          const color = STATUS_COLORS[status];
+          paths += `<path d="M${cx} ${cy} L${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2} Z" fill="${color}" opacity=".85"/>`;
+          cumAngle += angle;
+        });
+      }
+
       // hole
-      paths += `<circle cx="${cx}" cy="${cy}" r="${r - sw}" fill="#111F33"/>`;
-      paths += `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="white" font-size="13" font-weight="700" font-family="Rajdhani">${total}</text>`;
+      paths += `<circle cx="${cx}" cy="${cy}" r="${r - sw}" fill="var(--card)"/>`;
+      paths += `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="var(--text)" font-size="13" font-weight="700" font-family="Rajdhani">${total}</text>`;
       svg.innerHTML = paths;
-      legend.innerHTML = entries.map(([s, c]) => `
-    <div class="legend-item">
-      <span class="legend-dot" style="background:${colors[s] || '#888'}"></span>
-      <span>${s}</span>
-      <span class="legend-val">${c}</span>
-    </div>`).join('');
+
+      legend.innerHTML = Object.entries(counts).map(([s, c]) => `
+        <div class="legend-item">
+          <span class="legend-dot" style="background:${STATUS_COLORS[s]}"></span>
+          <span>${s}</span>
+          <span class="legend-val">${c}</span>
+        </div>`).join('');
     }
 
     function renderBarChart() {
       const el = document.getElementById('bar-chart');
       el.innerHTML = DB.projects.map(p => {
-        const pct = projProgress(p.id);
+        const pct = getProjectProgress(p);
         const name = p.name || 'Sin nombre';
+        const color = getStatusColor(p.status);
         return `<div class="bar-row">
       <span class="bar-label" title="${name}">${name.substring(0, 18)}${name.length > 18 ? '…' : ''}</span>
       <div class="bar-outer">
-        <div class="bar-inner" style="width:${pct}%;background:${barColor(pct)}">${pct}%</div>
+        <div class="bar-inner" style="width:${pct}%;background:${color}">${pct}%</div>
       </div>
     </div>`;
       }).join('');
@@ -1842,12 +1879,14 @@
 
     function renderGlobalTable(acts) {
       const tbody = document.getElementById('global-tbody');
+      if (!tbody) return;
       const proj = (id) => DB.projects.find(p => p.id === id);
       tbody.innerHTML = acts.map(a => {
         const p = proj(a.projId);
+        const statusColor = getStatusColor(p?.status);
         return `<tr>
       <td><div class="act-name">${a.name}<small>${a.id}</small></div></td>
-      <td><span style="font-size:11px;padding:3px 8px;border-radius:4px;background:#${(p?.color || '1565C0')}22;color:#${(p?.color || '1565C0')};border:1px solid #${(p?.color || '1565C0')}44">${p?.name || a.projId}</span></td>
+      <td><span style="font-size:11px;padding:3px 8px;border-radius:4px;background:${statusColor}22;color:${statusColor};border:1px solid ${statusColor}44">${p?.name || a.projId}</span></td>
       <td>
         <div style="font-size:11px;color:var(--text)">${p?.city || '—'}</div>
         <div style="font-size:10px;color:var(--muted)">${p?.pdvCode ? `[${p.pdvCode}] ` : ''}${p?.pdvName || ''}</div>
@@ -1989,7 +2028,8 @@
       body.innerHTML = projectsToShow.map(p => {
         const start = new Date(p.start);
         const end = new Date(p.end);
-        const pct = projProgress(p.id);
+        const pct = getProjectProgress(p);
+        const statusColor = getStatusColor(p.status);
         const msPerDay = 1000 * 60 * 60 * 24;
 
         let left = 0, width = 0;
@@ -2022,13 +2062,13 @@
       <div class="gantt-row-visual" onclick="showPage('project-detail','${p.id}')" style="cursor:pointer">
         <div class="gantt-act-label" title="${p.name}">
           <div>
-            <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#${p.color || '1565C0'}">${p.name}</div>
+            <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:${statusColor}">${p.name}</div>
             <div style="font-size:9px;color:var(--muted)">${p.client || ''} ${p.city ? `(${p.city})` : ''}</div>
           </div>
         </div>
         <div class="gantt-bars-area">
           ${units.map(() => `<div class="gantt-grid-line"></div>`).join('')}
-          <div class="gantt-bar-v" style="left:${left}px; width:${width}px; background:linear-gradient(90deg, #${p.color || '1565C0'}, var(--cyan));" title="${p.name} (${pct}%)">
+          <div class="gantt-bar-v" style="left:${left}px; width:${width}px; background:linear-gradient(90deg, ${statusColor}, ${statusColor}dd);" title="${p.name} (${pct}%)">
             <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${pct}%</span>
           </div>
         </div>
@@ -2044,10 +2084,11 @@
       renderSidebar();
       const grid = document.getElementById('proj-grid');
       grid.innerHTML = DB.projects.map(p => {
-        const pct = projProgress(p.id);
+        const pct = getProjectProgress(p);
         const acts = projActivities(p.id);
         const done = acts.filter(a => a.cum === 'COMPLETADO').length;
-        return `<div class="proj-card" style="--proj-color:#${p.color || '1565C0'}" onclick="showPage('project-detail','${p.id}')">
+        const color = getStatusColor(p.status);
+        return `<div class="proj-card" style="--proj-color:${color}" onclick="showPage('project-detail','${p.id}')">
       <div class="proj-card-header">
         <div>
           <div class="proj-id">${p.id}</div>
@@ -2069,8 +2110,8 @@
         <div class="proj-date"><strong>${fmtDate(p.end)}</strong>Fin</div>
       </div>
       <div class="proj-progress">
-        <div class="proj-prog-info"><span>Avance general</span><span class="proj-prog-pct">${pct}%</span></div>
-        <div class="prog-wrap"><div class="prog-bar ${progColor(pct)}" style="width:${pct}%"></div></div>
+        <div class="proj-prog-info"><span>Avance general</span><span class="proj-prog-pct" style="color:${color}">${pct}%</span></div>
+        <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%;background:${color}"></div></div>
       </div>
       <div class="proj-footer">
         <span class="acts-count">📋 ${acts.length} actividades — ${done} completadas</span>
@@ -2092,7 +2133,8 @@
       const p = DB.projects.find(x => x.id === projId);
       if (!p) return;
       const acts = projActivities(projId);
-      const pct = projProgress(projId);
+      const pct = getProjectProgress(p);
+      const statusColor = getStatusColor(p.status);
       const done = acts.filter(a => a.cum === 'COMPLETADO').length;
       const inProg = acts.filter(a => a.cum === 'EN PROGRESO').length;
       const pending = acts.filter(a => a.cum === 'PENDIENTE').length;
@@ -2100,7 +2142,7 @@
       document.getElementById('detail-header').innerHTML = `
     <div>
       <div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">${p.id} — ${p.client} ${p.city ? `(${p.city})` : ''}</div>
-      <div class="page-title" style="color:#${p.color || '1565C0'}">${p.name}</div>
+      <div class="page-title" style="color:${statusColor}">${p.name}</div>
       <div style="font-size:12px;color:var(--cyan);margin-bottom:8px">${p.pdvCode ? `PDV: ${p.pdvCode} - ` : ''}${p.pdvName || ''}</div>
       <div class="page-sub">${p.desc || ''}</div>
     </div>
@@ -2111,9 +2153,9 @@
     </div>`;
 
       document.getElementById('detail-stats').innerHTML = `
-    <div class="stat-card" style="--accent-color:#${p.color || '1565C0'}">
+    <div class="stat-card" style="--accent-color:${statusColor}">
       <div class="stat-value">${pct}%</div><div class="stat-label">Avance General</div>
-      <div class="prog-wrap" style="margin-top:8px"><div class="prog-bar ${progColor(pct)}" style="width:${pct}%"></div></div>
+      <div class="prog-wrap" style="margin-top:8px"><div class="prog-bar" style="width:${pct}%;background:${statusColor}"></div></div>
     </div>
     <div class="stat-card" style="--accent-color:#00C853"><div class="stat-value">${done}</div><div class="stat-label">Completadas</div></div>
     <div class="stat-card" style="--accent-color:#FFD600"><div class="stat-value">${inProg}</div><div class="stat-label">En Progreso</div></div>
@@ -2137,7 +2179,7 @@
     <td style="color:var(--muted);font-size:11px">${daysBetween(a.start, a.end)}</td>
     <td class="gantt-bar-cell">
       <div class="gantt-bar-outer">
-        <div class="gantt-bar-inner" style="width:${a.pct}%;background:${barColor(+a.pct)}"></div>
+        <div class="gantt-bar-inner" style="width:${a.pct}%;background:${getStatusColor(a.status)}"></div>
         <span class="gantt-bar-label">${a.pct}%</span>
       </div>
     </td>
@@ -2514,10 +2556,6 @@
 
     // Auto-sync on load if URL is provided
     if (CONFIG_SYNC_URL) {
-      const syncInput = document.getElementById('sync-url');
-      if (syncInput && syncInput.parentElement) {
-        syncInput.parentElement.style.display = 'none';
-      }
       syncWithGoogleSheets();
     }
   </script>
