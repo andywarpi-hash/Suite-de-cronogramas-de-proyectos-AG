@@ -47,18 +47,19 @@
     * {
       box-sizing: border-box;
       margin: 0;
-      padding: 0
+      padding: 0;
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      transition: background .2s ease, color .2s ease;
     }
 
     body {
-      font-family: 'Inter', sans-serif;
       background: var(--bg);
-      color: var(--text);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      text-rendering: optimizeLegibility;
-      min-height: 100vh;
-      overflow-x: hidden
     }
 
     /* ── TOPBAR ── */
@@ -196,9 +197,11 @@
       top: 60px;
       height: calc(100vh - 60px);
       overflow-y: auto;
+      font-family: 'Inter', sans-serif;
     }
 
     .sidebar-label {
+      font-family: 'Inter', sans-serif;
       font-size: 9px;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -218,6 +221,7 @@
       color: var(--muted);
       border-left: 3px solid transparent;
       font-weight: 500;
+      font-family: 'Inter', sans-serif;
     }
 
     .sidebar-item:hover {
@@ -297,6 +301,18 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border-radius: 12px;
+      font-size: 18px;
+      min-width: auto;
     }
 
     /* ── STATS GRID ── */
@@ -1205,6 +1221,56 @@
         grid-template-columns: 1fr
       }
     }
+
+    /* Groups UI */
+    .group-card { transition: transform .18s ease, box-shadow .18s ease; background: linear-gradient(180deg, rgba(16, 33, 56, .95), rgba(16, 33, 56, .9)); border: 1px solid rgba(255,255,255,.08); padding: 26px; border-radius: 20px; min-height: 240px; }
+    .group-card:hover { transform: translateY(-6px); box-shadow: 0 16px 34px rgba(0,0,0,0.28); }
+    .group-card-top { display:flex;align-items:center;gap:18px;margin-bottom:20px; }
+    .group-card-badge { width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px; }
+    .group-card-title { font-weight:800;font-size:18px;color:var(--text); }
+    .group-card-sub { font-size:13px;color:var(--muted);margin-top:6px; }
+    .group-card-statuses { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px; }
+    .group-status-pill { display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);font-size:13px;color:var(--text); }
+    .group-status-pill strong { color:var(--text); }
+    .group-kpi-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:18px;margin-bottom:22px; }
+    .group-kpi-card { padding:20px;border-radius:18px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease; min-height: 130px; }
+    .group-kpi-card:hover { transform:translateY(-3px);box-shadow:0 14px 28px rgba(0,0,0,0.16); }
+    .group-cards-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:28px; }
+    .group-tab { display:none; }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border-radius: 12px;
+      font-size: 18px;
+      min-width: auto;
+    }
+
+    /* Sidebar submenu */
+    .sidebar-submenu-toggle { padding:8px 12px;color:var(--muted);font-weight:700;cursor:pointer }
+    .sidebar-submenu-list { max-height:0; overflow:hidden; transition:max-height .22s ease; }
+    .sidebar-submenu-list.open { max-height:400px; }
+    .sidebar-submenu-list .sub-item {
+      padding:10px 20px 10px 34px;
+      font-size:13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-submenu-list .sub-item:hover { background: rgba(21, 101, 192, 0.08); color: var(--text); }
+    .sidebar-submenu-list .sub-item.active { color: var(--cyan); border-left-color: var(--cyan); }
+
+    /* Dropdown */
+    .group-dropdown { display:inline-block;position:relative;margin-right:8px }
+    .group-dropdown-list { position:absolute;right:0;top:38px;min-width:180px;background:var(--surface);border:1px solid var(--border);box-shadow:0 8px 20px rgba(2,6,23,0.4);border-radius:8px;z-index:40 }
+    .group-dropdown-list .dropdown-item { padding:10px 12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.02); }
+    .group-dropdown-list .dropdown-item:hover { background:rgba(255,255,255,0.02); }
+
   </style>
 </head>
 
@@ -1239,10 +1305,11 @@
       <div class="sidebar-item active" onclick="showPage('overview')" id="nav-overview">
         <span class="icon">▦</span> Dashboard Global
       </div>
-      <div class="sidebar-item" onclick="showPage('projects')" id="nav-projects">
-        <span class="icon">◈</span> Mis Proyectos
+      <div class="sidebar-item" onclick="openProjectsPage()" id="nav-projects">
+        <span class="icon">◈</span> Proyectos
         <span class="proj-badge" id="proj-count-badge">0</span>
       </div>
+      <div id="nav-projects-sub"></div>
       <div class="sidebar-item" onclick="showPage('gantt-visual')" id="nav-gantt-visual">
         <span class="icon">📊</span> Cronograma Gantt
       </div>
@@ -1312,13 +1379,19 @@
       <div class="page" id="page-projects">
         <div class="page-header">
           <div>
-            <div class="page-title">Mis Proyectos</div>
-            <div class="page-sub">Gestión completa de proyectos</div>
+            <div class="page-title">Proyectos</div>
+            <div class="page-sub">Gestión completa de proyectos agrupados por tipo</div>
+            <div class="page-context" id="project-subheader"></div>
           </div>
           <div class="actions-row">
+            <div class="group-dropdown" id="group-dropdown">
+              <button class="btn btn-outline" id="group-dropdown-btn" onclick="toggleGroupDropdown()">Filtrar ▾</button>
+              <div class="group-dropdown-list" id="group-dropdown-list" style="display:none"></div>
+            </div>
             <button class="btn btn-primary" onclick="openNewProjectModal()">+ Nuevo Proyecto</button>
           </div>
         </div>
+        <div class="project-tabs" id="project-group-tabs"></div>
         <div class="proj-grid" id="proj-grid"></div>
       </div>
 
@@ -1380,7 +1453,7 @@
                 <p style="font-size:12px;font-weight:700;color:var(--cyan);margin-bottom:8px;letter-spacing:1px">HOJA:
                   PROYECTOS</p>
                 <div style="font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:4px">
-                  ${['ID_PROYECTO','NOMBRE_PROYECTO','CLIENTE','CIUDAD','CODIGO_PDV','NOMBRE_PDV','GERENTE_PROYECTO','LIDER_PROYECTO','FECHA_INICIO','FECHA_FIN','ESTADO','DESCRIPCION'].map(c=>`<span>•
+                  ${['ID_PROYECTO','NOMBRE_PROYECTO','TIPO_PROYECTO','CIUDAD','CODIGO_PDV','NOMBRE_PDV','GERENTE_PROYECTO','LIDER_PROYECTO','FECHA_INICIO','FECHA_FIN','ESTADO','DESCRIPCION'].map(c=>`<span>•
                     ${c}</span>`).join('')}
                 </div>
               </div>
@@ -1427,8 +1500,8 @@
         </div>
         <div class="form-group form-full"><label class="form-label">Nombre del Proyecto</label><input class="form-input"
             id="fi-name" placeholder="Ej: Instalación Sistema HVAC" /></div>
-        <div class="form-group form-full"><label class="form-label">Cliente</label><input class="form-input"
-            id="fi-client" placeholder="Nombre del cliente" /></div>
+        <div class="form-group form-full"><label class="form-label">Tipo de Proyecto</label><input class="form-input"
+            id="fi-type" placeholder="Ej: PDV Nuevos / Intervenciones / Reposiciones" /></div>
         <div class="form-group"><label class="form-label">Ciudad</label><input class="form-input" id="fi-city"
             placeholder="Ciudad" /></div>
         <div class="form-group"><label class="form-label">Código PDV</label><input class="form-input" id="fi-pdv-code"
@@ -1537,6 +1610,61 @@
       'Entrega': '#D32F2F',
       'En espera': '#9E9E9E'
     };
+
+    // Palette used to assign colors to groups deterministically
+    const GROUP_PALETTE = ['#1565C0','#B71C1C','#607D8B','#CFD8DC','#0D47A1','#D32F2F','#78909C','#00A896','#FF6D00'];
+
+    const GROUP_TYPES = [
+      { key: 'PDV Nuevos', color: '#1565C0' },
+      { key: 'Proyectos Especiales', color: '#B71C1C' },
+      { key: 'Intervenciones', color: '#607D8B' },
+      { key: 'Desmantelamientos', color: '#CFD8DC' },
+      { key: 'Reposiciones', color: '#0D47A1' },
+      { key: 'Energizaciones', color: '#D32F2F' },
+      { key: 'Otros', color: '#78909C' }
+    ];
+
+    // Current selected group; null = show groups overview
+    let currentGroup = null;
+
+    function getGroups() {
+      const map = new Map();
+      DB.projects.forEach(p => {
+        const raw = normalizeText(p.type || p.client) || 'Otros';
+        const key = raw.trim() || 'Otros';
+        map.set(key, (map.get(key) || 0) + 1);
+      });
+
+      const ordered = GROUP_TYPES.map(g => ({ key: g.key, count: map.get(g.key) || 0, color: g.color }));
+      const extraKeys = Array.from(map.keys()).filter(k => !GROUP_TYPES.some(g => g.key === k)).sort((a,b) => a.localeCompare(b, 'es', {sensitivity:'base'}));
+      const extra = extraKeys.map((k, i) => ({ key: k, count: map.get(k), color: GROUP_PALETTE[i % GROUP_PALETTE.length] }));
+      return ordered.concat(extra);
+    }
+
+    function normalizeText(value) {
+      return value == null ? '' : String(value).trim();
+    }
+
+    function normalizeKey(key) {
+      return String(key || '').toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
+    }
+
+    function getField(obj, ...keys) {
+      if (!obj || typeof obj !== 'object') return '';
+      const normalized = Object.keys(obj).reduce((acc, k) => {
+        acc[normalizeKey(k)] = obj[k];
+        return acc;
+      }, {});
+      for (const key of keys) {
+        const nk = normalizeKey(key);
+        if (normalized[nk] !== undefined && normalized[nk] !== null) return normalized[nk];
+      }
+      return '';
+    }
+
+    function normalizeGroupName(value) {
+      return normalizeKey(value || '');
+    }
 
     function applyStatusColors(colors) {
       if (!colors || typeof colors !== 'object') return;
@@ -1662,21 +1790,27 @@
         if (data.status_colors) applyStatusColors(data.status_colors);
 
         if (data.projects) {
-          data.projects = data.projects.map(p => ({
-            id: p.id || p.ID || p.ID_PROYECTO || '',
-            name: p.name || p.Nombre || p.NOMBRE_PROYECTO || 'Sin Nombre',
-            client: p.client || p.Cliente || p.CLIENTE || '',
-            city: p.city || p.Ciudad || p.CIUDAD || '',
-            pdvCode: p.pdvCode || p.CodigoPDV || p.CODIGO_PDV || '',
-            pdvName: p.pdvName || p.NombrePDV || p.NOMBRE_PDV || '',
-            manager: p.manager || p.Gerente || p.GERENTE_PROYECTO || '',
-            leader: p.leader || p.Lider || p.LIDER_PROYECTO || '',
-            start: p.start || p.Inicio || p.FECHA_INICIO || '',
-            end: p.end || p.Fin || p.FECHA_FIN || '',
-            status: p.status || p.Estado || p.ESTADO || p.STATUS || p.Status || 'Planificado',
-            desc: p.desc || p.Descripcion || p.DESCRIPCION || '',
-            color: getStatusColor(p.status || p.Estado || p.ESTADO || p.STATUS || p.Status || 'Planificado')
-          }));
+          data.projects = data.projects.map(p => {
+            const rawType = normalizeText(getField(p, 'type', 'Tipo', 'TIPO', 'TIPO_PROYECTO', 'tipo_proyecto', 'Tipo de Proyecto', 'Tipo_Proyecto', 'TipoProyecto'));
+            const rawClient = normalizeText(getField(p, 'client', 'Cliente', 'CLIENTE'));
+            return {
+              id: normalizeText(getField(p, 'id', 'ID', 'ID_PROYECTO')),
+              name: normalizeText(getField(p, 'name', 'Nombre', 'NOMBRE_PROYECTO')) || 'Sin Nombre',
+              // Prefer explicit tipo fields, fallback to previous CLIENTE for compat
+              type: rawType || rawClient,
+              client: rawClient,
+              city: normalizeText(getField(p, 'city', 'Ciudad', 'CIUDAD')),
+              pdvCode: normalizeText(getField(p, 'pdvCode', 'CodigoPDV', 'CODIGO_PDV')),
+              pdvName: normalizeText(getField(p, 'pdvName', 'NombrePDV', 'NOMBRE_PDV')),
+              manager: normalizeText(getField(p, 'manager', 'Gerente', 'GERENTE_PROYECTO')),
+              leader: normalizeText(getField(p, 'leader', 'Lider', 'LIDER_PROYECTO')),
+              start: normalizeText(getField(p, 'start', 'Inicio', 'FECHA_INICIO')),
+              end: normalizeText(getField(p, 'end', 'Fin', 'FECHA_FIN')),
+              status: normalizeText(getField(p, 'status', 'Estado', 'ESTADO', 'STATUS', 'Status')) || 'Planificado',
+              desc: normalizeText(getField(p, 'desc', 'Descripcion', 'DESCRIPCION')),
+              color: getStatusColor(normalizeText(getField(p, 'status', 'Estado', 'ESTADO', 'STATUS', 'Status')) || 'Planificado')
+            };
+          });
         }
         if (data.activities) {
           data.activities = data.activities.map(a => ({
@@ -1700,6 +1834,7 @@
           DB = data;
           saveDB();
           renderOverview();
+          if (document.getElementById('page-projects').classList.contains('active')) renderProjects();
           toast('Sincronización exitosa ✓');
         }
       } catch (err) {
@@ -1763,6 +1898,11 @@
       if (pageId === 'gantt-visual') renderGanttVisual();
     }
 
+    function openProjectsPage() {
+      currentGroup = null;
+      showPage('projects');
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // SIDEBAR
     // ═══════════════════════════════════════════════════════════════
@@ -1778,6 +1918,22 @@
       <span class="proj-badge" style="background:${statusColor}">${pct}%</span>
     </div>`;
       }).join('');
+      // render project submenu
+      renderProjectSidebarSubmenu();
+    }
+
+    // Render collapsible submenu under 'Proyectos' in the sidebar with dynamic groups
+    function renderProjectSidebarSubmenu() {
+      const container = document.getElementById('nav-projects-sub');
+      if (!container) return;
+      const groups = getGroups();
+      container.innerHTML = `<div class="sidebar-submenu-toggle" onclick="toggleProjectsSubmenu()">${currentGroup ? '▼' : '▸'} Proyectos</div>` +
+        `<div class="sidebar-submenu-list">${groups.map(g => `<div class="sidebar-item sub-item${normalizeGroupName(currentGroup) === normalizeGroupName(g.key) ? ' active' : ''}" onclick="selectGroup('${g.key}'); showPage('projects'); event.stopPropagation();">${g.key} <span class="proj-badge" style="background:${g.color || 'transparent'};">${g.count || ''}</span></div>`).join('')}</div>`;
+    }
+
+    function toggleProjectsSubmenu() {
+      const el = document.querySelector('#nav-projects-sub .sidebar-submenu-list');
+      if (!el) return; el.classList.toggle('open');
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -1928,7 +2084,7 @@
       let projectsToShow = DB.projects.filter(p =>
         p.name.toLowerCase().includes(filter) ||
         p.id.toLowerCase().includes(filter) ||
-        (p.client && p.client.toLowerCase().includes(filter))
+        ((p.type && p.type.toLowerCase().includes(filter)) || (p.client && p.client.toLowerCase().includes(filter)))
       );
 
       if (!projectsToShow.length) {
@@ -2000,7 +2156,7 @@
 
       // Render Header
       header.innerHTML = `
-    <div class="gantt-label-col">Proyecto / Cliente</div>
+    <div class="gantt-label-col">Proyecto / Tipo</div>
     <div class="gantt-days-scroll">
       ${units.map(d => {
         let top = '', bottom = '', isWE = false;
@@ -2063,7 +2219,7 @@
         <div class="gantt-act-label" title="${p.name}">
           <div>
             <div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:${statusColor}">${p.name}</div>
-            <div style="font-size:9px;color:var(--muted)">${p.client || ''} ${p.city ? `(${p.city})` : ''}</div>
+            <div style="font-size:9px;color:var(--muted)">${p.type || p.client || ''} ${p.city ? `(${p.city})` : ''}</div>
           </div>
         </div>
         <div class="gantt-bars-area">
@@ -2083,7 +2239,19 @@
     function renderProjects() {
       renderSidebar();
       const grid = document.getElementById('proj-grid');
-      grid.innerHTML = DB.projects.map(p => {
+      // If no group selected, show groups overview
+      if (!currentGroup) return renderProjectGroups();
+
+      const groupTitle = currentGroup;
+      const filteredProjects = DB.projects.filter(p => normalizeGroupName(p.type || p.client) === normalizeGroupName(currentGroup));
+      grid.innerHTML = `<div style="margin-bottom:12px;display:flex;align-items:center;gap:8px"><button class="btn btn-outline btn-sm btn-back" onclick="selectGroup(null)" aria-label="Volver a grupos">←</button><div style="font-weight:700;font-size:16px">${groupTitle}</div></div>`;
+
+      if (!filteredProjects.length) {
+        grid.innerHTML += `<div style="color:var(--muted);font-size:14px;padding:40px">No hay proyectos en este tipo de proyecto.</div>`;
+        return;
+      }
+
+      grid.innerHTML += filteredProjects.map(p => {
         const pct = getProjectProgress(p);
         const acts = projActivities(p.id);
         const done = acts.filter(a => a.cum === 'COMPLETADO').length;
@@ -2096,7 +2264,7 @@
         </div>
         ${statusBadge(p.status)}
       </div>
-      <div class="proj-client">🏢 ${p.client || '—'} ${p.city ? `• 📍 ${p.city}` : ''}</div>
+      <div class="proj-client">🏷️ ${p.type || p.client || '—'} ${p.city ? `• 📍 ${p.city}` : ''}</div>
       <div style="font-size:11px;color:var(--cyan);margin-bottom:12px;display:flex;align-items:center;gap:6px">
         <span style="background:rgba(0,180,216,.1);padding:2px 6px;border-radius:4px;font-weight:700">${p.pdvCode || 'PDV-???'}</span>
         <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.pdvName || 'Nombre de PDV'}</span>
@@ -2125,6 +2293,75 @@
       if (!DB.projects.length) grid.innerHTML = `<div style="color:var(--muted);font-size:14px;padding:40px">No hay proyectos. Crea uno nuevo o importa un Excel.</div>`;
     }
 
+    // Dropdown populate & toggle
+    function populateGroupDropdown() {
+      const el = document.getElementById('group-dropdown-list'); if (!el) return;
+      const groups = getGroups();
+      el.innerHTML = groups.map(g => `<div class="dropdown-item" onclick="selectGroup('${g.key}')">${g.key} <span style="float:right;color:var(--muted)">${g.count}</span></div>`).join('');
+    }
+
+    function toggleGroupDropdown() {
+      const list = document.getElementById('group-dropdown-list'); if (!list) return;
+      const visible = list.style.display === 'block';
+      list.style.display = visible ? 'none' : 'block';
+    }
+
+    document.addEventListener('click', function(e){
+      const dl = document.getElementById('group-dropdown-list');
+      const btn = document.getElementById('group-dropdown-btn');
+      if (!dl || !btn) return;
+      if (!btn.contains(e.target) && !dl.contains(e.target)) dl.style.display = 'none';
+    });
+
+    function renderProjectTabs() {
+      const el = document.getElementById('project-group-tabs');
+      if (!el) return;
+      const groups = getGroups();
+      el.innerHTML = groups.map(g => `<button class="btn btn-outline group-tab" onclick="selectGroup('${g.key}')" data-group="${g.key}">${g.key}</button>`).join('');
+      // active styling
+      Array.from(el.querySelectorAll('button')).forEach(b => { if (normalizeGroupName(currentGroup) === normalizeGroupName(b.dataset.group)) b.classList.add('active'); });
+      populateGroupDropdown();
+    }
+
+    function renderProjectGroups() {
+      renderSidebar();
+      renderProjectTabs();
+      const pageSubheader = document.getElementById('project-subheader');
+      if (pageSubheader) pageSubheader.innerHTML = '';
+      const grid = document.getElementById('proj-grid');
+      const groups = getGroups();
+      grid.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:24px">${groups.map(g => {
+        const projects = DB.projects.filter(p => normalizeGroupName(p.type || p.client) === normalizeGroupName(g.key));
+        const statusCounts = Object.keys(STATUS_COLORS).reduce((acc, status) => { acc[status] = 0; return acc; }, {});
+        projects.forEach(p => {
+          statusCounts[getStatusKey(p.status)] = (statusCounts[getStatusKey(p.status)] || 0) + 1;
+        });
+        const statusHtml = Object.keys(STATUS_COLORS).map(status => `<div class="group-status-pill"><span>${status}</span><strong>${statusCounts[status] || 0}</strong></div>`).join('');
+        return `<div class="group-card" style="padding:18px;border-radius:12px;background:var(--card);border:1px solid ${g.color}22;cursor:pointer" onclick="selectGroup('${g.key}')">
+          <div class="group-card-top">
+            <div class="group-card-badge" style="background:${g.color};">${String(g.key)[0] || ''}</div>
+            <div>
+              <div class="group-card-title">${g.key}</div>
+              <div class="group-card-sub">${g.count} proyectos</div>
+            </div>
+          </div>
+          <div class="group-card-statuses">${statusHtml}</div>
+        </div>`;
+      }).join('')}</div>`;
+    }
+
+    function selectGroup(key) {
+      currentGroup = normalizeText(key);
+      renderProjects();
+      // update tabs active
+      const tabsEl = document.getElementById('project-group-tabs');
+      if (tabsEl) Array.from(tabsEl.querySelectorAll('button')).forEach(b => b.classList.toggle('active', b.dataset.group === currentGroup));
+      // update sidebar submenu active state
+      renderProjectSidebarSubmenu();
+      // update dropdown label
+      const dropBtn = document.getElementById('group-dropdown-btn'); if (dropBtn) dropBtn.textContent = currentGroup ? `${currentGroup} ▾` : 'Filtrar ▾';
+    }
+
     // ═══════════════════════════════════════════════════════════════
     // PROJECT DETAIL PAGE
     // ═══════════════════════════════════════════════════════════════
@@ -2141,12 +2378,13 @@
 
       document.getElementById('detail-header').innerHTML = `
     <div>
-      <div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">${p.id} — ${p.client} ${p.city ? `(${p.city})` : ''}</div>
+      <div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:4px">${p.id} — ${p.type || p.client} ${p.city ? `(${p.city})` : ''}</div>
       <div class="page-title" style="color:${statusColor}">${p.name}</div>
       <div style="font-size:12px;color:var(--cyan);margin-bottom:8px">${p.pdvCode ? `PDV: ${p.pdvCode} - ` : ''}${p.pdvName || ''}</div>
       <div class="page-sub">${p.desc || ''}</div>
     </div>
     <div class="actions-row">
+      <button class="btn btn-outline btn-sm btn-back" onclick="showPage('projects')" aria-label="Volver a proyectos">←</button>
       <button class="btn btn-outline" onclick="openEditProjectModal('${p.id}')">✏️ Editar Proyecto</button>
       <button class="btn btn-primary" onclick="openNewActivityModal()">+ Actividad</button>
       <button class="btn btn-success btn-sm" onclick="exportProjectExcel('${p.id}')">↓ Exportar</button>
@@ -2201,7 +2439,7 @@
     function openNewProjectModal() {
       editingProjId = null;
       document.getElementById('modal-proj-title').textContent = 'Nuevo Proyecto';
-      ['fi-id', 'fi-name', 'fi-client', 'fi-city', 'fi-pdv-code', 'fi-pdv-name', 'fi-manager', 'fi-leader', 'fi-start', 'fi-end', 'fi-desc'].forEach(id => document.getElementById(id).value = '');
+      ['fi-id', 'fi-name', 'fi-type', 'fi-city', 'fi-pdv-code', 'fi-pdv-name', 'fi-manager', 'fi-leader', 'fi-start', 'fi-end', 'fi-desc'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('fi-status').value = 'Planificado';
       document.getElementById('fi-color').value = '1565C0';
       document.getElementById('modal-project').classList.add('open');
@@ -2214,7 +2452,7 @@
       document.getElementById('modal-proj-title').textContent = 'Editar Proyecto';
       document.getElementById('fi-id').value = p.id;
       document.getElementById('fi-name').value = p.name;
-      document.getElementById('fi-client').value = p.client || '';
+      document.getElementById('fi-type').value = p.type || p.client || '';
       document.getElementById('fi-city').value = p.city || '';
       document.getElementById('fi-pdv-code').value = p.pdvCode || '';
       document.getElementById('fi-pdv-name').value = p.pdvName || '';
@@ -2234,7 +2472,8 @@
       if (!id || !name) { toast('ID y Nombre son requeridos', 'error'); return; }
       const obj = {
         id, name,
-        client: document.getElementById('fi-client').value.trim(),
+        type: document.getElementById('fi-type').value.trim(),
+        client: document.getElementById('fi-type').value.trim(),
         city: document.getElementById('fi-city').value.trim(),
         pdvCode: document.getElementById('fi-pdv-code').value.trim(),
         pdvName: document.getElementById('fi-pdv-name').value.trim(),
@@ -2355,21 +2594,26 @@
           if (projSheet) {
             const rows = XLSX.utils.sheet_to_json(projSheet);
             rows.forEach(r => {
-              const id = String(r['ID_PROYECTO'] || '').trim();
+              const id = normalizeText(getField(r, 'ID_PROYECTO', 'ID'));
               if (!id) return;
+              const rawType = normalizeText(getField(r, 'TIPO_PROYECTO', 'TIPO', 'CLIENTE', 'Tipo de Proyecto', 'Tipo_Proyecto', 'TipoProyecto'));
+              const rawClient = normalizeText(getField(r, 'CLIENTE', 'Cliente'));
               const obj = {
-                id, name: String(r['NOMBRE_PROYECTO'] || '').trim(),
-                client: String(r['CLIENTE'] || '').trim(),
-                city: String(r['CIUDAD'] || '').trim(),
-                pdvCode: String(r['CODIGO_PDV'] || '').trim(),
-                pdvName: String(r['NOMBRE_PDV'] || '').trim(),
-                manager: String(r['GERENTE_PROYECTO'] || '').trim(),
-                leader: String(r['LIDER_PROYECTO'] || '').trim(),
-                start: fmtExcelDate(r['FECHA_INICIO']),
-                end: fmtExcelDate(r['FECHA_FIN']),
-                status: String(r['ESTADO'] || 'Planificado').trim(),
-                desc: String(r['DESCRIPCION'] || '').trim(),
-                color: String(r['COLOR_HEX'] || '1565C0').trim(),
+                id,
+                name: normalizeText(getField(r, 'NOMBRE_PROYECTO', 'Nombre')),
+                // Read tipo_proyecto first, fallback to previous CLIENTE column
+                type: rawType || rawClient,
+                client: rawClient,
+                city: normalizeText(getField(r, 'CIUDAD', 'Ciudad')),
+                pdvCode: normalizeText(getField(r, 'CODIGO_PDV', 'CodigoPDV')),
+                pdvName: normalizeText(getField(r, 'NOMBRE_PDV', 'NombrePDV')),
+                manager: normalizeText(getField(r, 'GERENTE_PROYECTO', 'Gerente')),
+                leader: normalizeText(getField(r, 'LIDER_PROYECTO', 'LIDER_PROYECTO', 'Lider')),
+                start: fmtExcelDate(getField(r, 'FECHA_INICIO', 'Inicio')),
+                end: fmtExcelDate(getField(r, 'FECHA_FIN', 'Fin')),
+                status: normalizeText(getField(r, 'ESTADO', 'Estado')) || 'Planificado',
+                desc: normalizeText(getField(r, 'DESCRIPCION', 'Descripcion')),
+                color: normalizeText(getField(r, 'COLOR_HEX', 'Color')) || '1565C0',
               };
               const idx = DB.projects.findIndex(p => p.id === id);
               if (idx > -1) DB.projects[idx] = obj; else { DB.projects.push(obj); importedProj++; }
@@ -2436,7 +2680,7 @@
       const wb = XLSX.utils.book_new();
       // PROYECTOS
       const projData = DB.projects.map(p => ({
-        'ID_PROYECTO': p.id, 'NOMBRE_PROYECTO': p.name, 'CLIENTE': p.client,
+        'ID_PROYECTO': p.id, 'NOMBRE_PROYECTO': p.name, 'TIPO_PROYECTO': p.type || p.client,
         'CIUDAD': p.city || '', 'CODIGO_PDV': p.pdvCode || '', 'NOMBRE_PDV': p.pdvName || '',
         'GERENTE_PROYECTO': p.manager, 'LIDER_PROYECTO': p.leader,
         'FECHA_INICIO': p.start, 'FECHA_FIN': p.end, 'ESTADO': p.status,
@@ -2510,7 +2754,7 @@
       const ws1 = XLSX.utils.json_to_sheet([{
         'ID_PROYECTO': p.id,
         'NOMBRE_PROYECTO': p.name,
-        'CLIENTE': p.client,
+        'TIPO_PROYECTO': p.type || p.client,
         'CIUDAD': p.city || '',
         'CODIGO_PDV': p.pdvCode || '',
         'NOMBRE_PDV': p.pdvName || '',
