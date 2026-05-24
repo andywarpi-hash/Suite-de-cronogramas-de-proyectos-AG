@@ -1274,6 +1274,19 @@
     /* Hide duplicated projects list in sidebar (visual only) */
     #proj-sidebar-label, #proj-sidebar-list { display: none !important; }
 
+    .designer-badge{
+      position: fixed;
+      bottom: 10px;
+      left: 14px;
+
+      font-size: 10px;
+      letter-spacing: 3px;
+
+      color: rgba(255,255,255,0.22);
+
+      z-index: 9999;
+    }
+
   </style>
 </head>
 
@@ -2803,6 +2816,7 @@
       syncWithGoogleSheets();
     }
   </script>
+  <div class="designer-badge">•Designed by ADGE•</div>
 </body>
 
 </html>
