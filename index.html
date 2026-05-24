@@ -1112,23 +1112,41 @@
     .gantt-day-cell {
       width: var(--gantt-cell-width, 34px);
       min-width: var(--gantt-cell-width, 34px);
-      height: 40px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-right: 1px solid rgba(30, 58, 95, .3);
-      font-size: 10px;
-      color: var(--muted);
+      border-right: 1px solid rgba(30, 58, 95, .35);
+      font-size: 11px;
+      color: #FFFFFF;
       flex-direction: column;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      background: rgba(255, 255, 255, .05);
     }
 
     .gantt-day-cell.weekend {
-      background: rgba(0, 0, 0, .15)
+      background: rgba(255, 255, 255, .10)
+    }
+
+    .gantt-day-cell span,
+    .gantt-day-cell strong {
+      display: block;
+      color: #F5F7FA;
+      line-height: 1.15;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, .45);
+    }
+
+    .gantt-day-cell span {
+      font-size: 10px;
+      opacity: .85;
     }
 
     .gantt-day-cell strong {
-      font-size: 11px;
-      color: var(--text)
+      font-size: 12px;
+      font-weight: 700;
+      opacity: 1;
     }
 
     .gantt-visual-body {
@@ -1645,12 +1663,25 @@
       DB.projects.forEach(p => {
         const raw = normalizeText(p.type || p.client) || 'Otros';
         const key = raw.trim() || 'Otros';
-        map.set(key, (map.get(key) || 0) + 1);
+        const normalized = normalizeGroupName(key);
+        const existing = map.get(normalized);
+        if (existing) {
+          existing.count += 1;
+        } else {
+          map.set(normalized, { label: key, count: 1 });
+        }
       });
 
-      const ordered = GROUP_TYPES.map(g => ({ key: g.key, count: map.get(g.key) || 0, color: g.color }));
-      const extraKeys = Array.from(map.keys()).filter(k => !GROUP_TYPES.some(g => g.key === k)).sort((a,b) => a.localeCompare(b, 'es', {sensitivity:'base'}));
-      const extra = extraKeys.map((k, i) => ({ key: k, count: map.get(k), color: GROUP_PALETTE[i % GROUP_PALETTE.length] }));
+      const ordered = GROUP_TYPES.map(g => {
+        const normalized = normalizeGroupName(g.key);
+        const entry = map.get(normalized);
+        return { key: g.key, count: entry?.count || 0, color: g.color };
+      });
+
+      const extraKeys = Array.from(map.entries())
+        .filter(([normKey]) => !GROUP_TYPES.some(g => normalizeGroupName(g.key) === normKey))
+        .sort(([,a], [,b]) => a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }));
+      const extra = extraKeys.map(([,entry], i) => ({ key: entry.label, count: entry.count, color: GROUP_PALETTE[i % GROUP_PALETTE.length] }));
       return ordered.concat(extra);
     }
 
@@ -1806,6 +1837,8 @@
           data.projects = data.projects.map(p => {
             const rawType = normalizeText(getField(p, 'type', 'Tipo', 'TIPO', 'TIPO_PROYECTO', 'tipo_proyecto', 'Tipo de Proyecto', 'Tipo_Proyecto', 'TipoProyecto'));
             const rawClient = normalizeText(getField(p, 'client', 'Cliente', 'CLIENTE'));
+            const startRaw = normalizeText(getField(p, 'start', 'Inicio', 'FECHA_INICIO'));
+            const endRaw = normalizeText(getField(p, 'end', 'Fin', 'FECHA_FIN'));
             return {
               id: normalizeText(getField(p, 'id', 'ID', 'ID_PROYECTO')),
               name: normalizeText(getField(p, 'name', 'Nombre', 'NOMBRE_PROYECTO')) || 'Sin Nombre',
@@ -1817,8 +1850,8 @@
               pdvName: normalizeText(getField(p, 'pdvName', 'NombrePDV', 'NOMBRE_PDV')),
               manager: normalizeText(getField(p, 'manager', 'Gerente', 'GERENTE_PROYECTO')),
               leader: normalizeText(getField(p, 'leader', 'Lider', 'LIDER_PROYECTO')),
-              start: normalizeText(getField(p, 'start', 'Inicio', 'FECHA_INICIO')),
-              end: normalizeText(getField(p, 'end', 'Fin', 'FECHA_FIN')),
+              start: fmtExcelDate(startRaw),
+              end: fmtExcelDate(endRaw),
               status: normalizeText(getField(p, 'status', 'Estado', 'ESTADO', 'STATUS', 'Status')) || 'Planificado',
               desc: normalizeText(getField(p, 'desc', 'Descripcion', 'DESCRIPCION')),
               color: getStatusColor(normalizeText(getField(p, 'status', 'Estado', 'ESTADO', 'STATUS', 'Status')) || 'Planificado')
@@ -1835,8 +1868,8 @@
             leader: a.leader || a.Lider || a.LIDER_PROYECTO || '',
             enc: a.enc || a.Encargado || a.ENCARGADO || '',
             status: a.status || a.Estado || a.ESTADO || a.STATUS || a.Status || 'Planificado',
-            start: a.start || a.Inicio || a.FECHA_INICIO || '',
-            end: a.end || a.Fin || a.FECHA_FIN || '',
+            start: fmtExcelDate(a.start || a.Inicio || a.FECHA_INICIO || ''),
+            end: fmtExcelDate(a.end || a.Fin || a.FECHA_FIN || ''),
             pct: a.pct !== undefined ? a.pct : (a.progreso !== undefined ? a.progreso : (a.Progreso !== undefined ? a.Progreso : (a.porcentaje_avance !== undefined ? a.porcentaje_avance : (a.PORCENTAJE_AVANCE || 0)))),
             cum: a.cum || a.Cumplimiento || a.cumplimiento || a.CUMPLIMIENTO || 'PENDIENTE',
             obs: a.obs || a.Observaciones || a.OBSERVACIONES || ''
@@ -1876,8 +1909,28 @@
     // ═══════════════════════════════════════════════════════════════
     // UTILITIES
     // ═══════════════════════════════════════════════════════════════
-    function fmtDate(d) { if (!d) return '—'; const dt = new Date(d); return isNaN(dt) ? d : dt.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
-    function daysBetween(a, b) { const da = new Date(a), db = new Date(b); return isNaN(da) || isNaN(db) ? '—' : Math.round((db - da) / 86400000); }
+    function parseDate(value) {
+      if (value instanceof Date) return isNaN(value) ? null : value;
+      const text = String(value || '').trim();
+      if (!text) return null;
+      const iso = new Date(text);
+      if (!isNaN(iso)) return iso;
+      const dmy = text.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+      if (dmy) {
+        const [, d, m, y] = dmy;
+        return new Date(`${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`);
+      }
+      return null;
+    }
+    function fmtDate(d) {
+      if (!d) return '—';
+      const dt = parseDate(d);
+      return !dt ? d : dt.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+    function daysBetween(a, b) {
+      const da = parseDate(a), db = parseDate(b);
+      return !da || !db ? '—' : Math.round((db - da) / 86400000);
+    }
     function projActivities(projId) { return DB.activities.filter(a => a.projId === projId); }
     function projProgress(projId) { const acts = projActivities(projId); if (!acts.length) return 0; return Math.round(acts.reduce((s, a) => s + (+a.pct || 0), 0) / acts.length); }
     function statusBadge(s) {
@@ -2033,6 +2086,7 @@
 
     function renderBarChart() {
       const el = document.getElementById('bar-chart');
+      if (!el) return;
       el.innerHTML = DB.projects.map(p => {
         const pct = getProjectProgress(p);
         const name = p.name || 'Sin nombre';
@@ -2109,8 +2163,10 @@
       // Find date range
       let allDates = [];
       projectsToShow.forEach(p => {
-        if (p.start) allDates.push(new Date(p.start));
-        if (p.end) allDates.push(new Date(p.end));
+        const startDate = parseDate(p.start);
+        const endDate = parseDate(p.end);
+        if (startDate) allDates.push(startDate);
+        if (endDate) allDates.push(endDate);
       });
 
       if (!allDates.length) {
@@ -2195,8 +2251,8 @@
 
       // Render Body
       body.innerHTML = projectsToShow.map(p => {
-        const start = new Date(p.start);
-        const end = new Date(p.end);
+        const start = parseDate(p.start);
+        const end = parseDate(p.end);
         const pct = getProjectProgress(p);
         const statusColor = getStatusColor(p.status);
         const msPerDay = 1000 * 60 * 60 * 24;
@@ -2723,10 +2779,12 @@
       if (!actsToExport.length) return;
 
       // Find date range
-      let minDate = new Date(Math.min(...actsToExport.map(a => new Date(a.start))));
-      let maxDate = new Date(Math.max(...actsToExport.map(a => new Date(a.end))));
-      if (isNaN(minDate)) minDate = new Date();
-      if (isNaN(maxDate)) maxDate = new Date(minDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+      const startDates = actsToExport.map(a => parseDate(a.start)).filter(Boolean);
+      const endDates = actsToExport.map(a => parseDate(a.end)).filter(Boolean);
+      let minDate = startDates.length ? new Date(Math.min(...startDates)) : null;
+      let maxDate = endDates.length ? new Date(Math.max(...endDates)) : null;
+      if (!minDate || isNaN(minDate)) minDate = new Date();
+      if (!maxDate || isNaN(maxDate)) maxDate = new Date(minDate.getTime() + 30 * 24 * 60 * 60 * 1000);
 
       const days = [];
       let curr = new Date(minDate);
@@ -2743,11 +2801,11 @@
         const p = DB.projects.find(proj => proj.id === a.projId);
         const row = [a.name, p?.name || a.projId, a.status];
 
-        const start = new Date(a.start);
-        const end = new Date(a.end);
+        const start = parseDate(a.start);
+        const end = parseDate(a.end);
 
         days.forEach(d => {
-          if (d >= start && d <= end) {
+          if (start && end && d >= start && d <= end) {
             row.push('■');
           } else {
             row.push('');
