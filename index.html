@@ -1271,6 +1271,9 @@
     .group-dropdown-list .dropdown-item { padding:10px 12px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.02); }
     .group-dropdown-list .dropdown-item:hover { background:rgba(255,255,255,0.02); }
 
+    /* Hide duplicated projects list in sidebar (visual only) */
+    #proj-sidebar-label, #proj-sidebar-list { display: none !important; }
+
   </style>
 </head>
 
@@ -1317,7 +1320,7 @@
         <span class="icon">⇅</span> Importar / Exportar
       </div>
 
-      <div class="sidebar-label" style="margin-top:8px">Proyectos</div>
+      <div id="proj-sidebar-label" class="sidebar-label" style="margin-top:8px">Proyectos</div>
       <div id="proj-sidebar-list"></div>
     </div>
 
@@ -1343,10 +1346,7 @@
               <div class="donut-legend" id="donut-legend"></div>
             </div>
           </div>
-          <div class="chart-card">
-            <div class="chart-card-title">Avance por Proyecto</div>
-            <div class="bar-chart" id="bar-chart"></div>
-          </div>
+          <!-- Avance por Proyecto: eliminado a petición del usuario -->
         </div>
       </div>
 
