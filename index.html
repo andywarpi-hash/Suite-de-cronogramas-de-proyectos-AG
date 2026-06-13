@@ -706,6 +706,100 @@ box-shadow:
       font-size: 11px;
       color: var(--muted)
     }
+    
+    .kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 220px);
+  gap: 16px;
+
+  justify-content: start;
+  align-items: start;
+
+  margin: 0 0 20px 0;
+  padding: 0;
+}
+
+/* ───────────────────────────────
+   KPI EXECUTIVE CARDS
+─────────────────────────────── */
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(3, 220px);
+  gap: 16px;
+
+  justify-content: start;
+  align-items: start;
+
+  margin: 0 0 20px 0;
+  padding: 0;
+}
+
+/* ── CARD BASE ── */
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+
+  padding: 18px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  min-height: 95px;
+
+  position: relative;
+  overflow: hidden;
+
+  transition: all .25s ease;
+}
+
+/* ── TOP ACCENT LINE (igual que proyectos) ── */
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+
+  background: linear-gradient(
+    90deg,
+    var(--proj-color, var(--blue)),
+    var(--cyan)
+  );
+
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s ease;
+}
+
+/* ── HOVER EFFECT ── */
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px var(--shadow);
+  border-color: var(--border);
+}
+
+.kpi-card::after {
+  transform: scaleX(1);
+}
+
+/* ── TEXTOS ── */
+.kpi-title {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+.kpi-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+}
 
     /* ── TABLE generic ── */
     .table-wrap {
@@ -1395,7 +1489,7 @@ box-shadow:
           </div>
         </div>
 
-        <div id="executive-kpis"></div>
+<div id="executive-kpis"></div>
 
         <div class="stats-grid" id="stats-grid"></div>
 
@@ -2035,8 +2129,52 @@ box-shadow:
     // ═══════════════════════════════════════════════════════════════
     // PÁGINA DE VISTA GENERAL
     // ═══════════════════════════════════════════════════════════════
+
+function renderExecutiveKPIs() {
+  const el = document.getElementById('executive-kpis');
+  if (!el) return;
+
+  const totalProjects = DB.projects.length;
+
+  const avgProgress =
+    totalProjects > 0
+      ? Math.round(
+          DB.projects.reduce((sum, p) => sum + getProjectProgress(p), 0) /
+          totalProjects
+        )
+      : 0;
+
+  const cities = new Set(
+    DB.projects
+      .map(p => (p.city || '').trim())
+      .filter(c => c && c.toLowerCase() !== 'nacional')
+  );
+
+  el.innerHTML = `
+    <div class="kpi-row">
+
+      <div class="kpi-card">
+        <div class="kpi-title">Total Proyectos</div>
+        <div class="kpi-value">${totalProjects}</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Avance Global</div>
+        <div class="kpi-value">${avgProgress}%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-title">Ciudades Activas</div>
+        <div class="kpi-value">${cities.size}</div>
+      </div>
+
+    </div>
+  `;
+}
+
     function renderOverview() {
       renderSidebar();
+      renderExecutiveKPIs();
 
       const states = Object.keys(STATUS_COLORS);
       document.getElementById('stats-grid').innerHTML = states.map(state => {
