@@ -349,48 +349,6 @@ box-shadow:
       margin-bottom: 24px
     }
 
-    .executive-kpis {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.exec-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.exec-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, var(--blue), var(--cyan));
-}
-
-.exec-title {
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 1px;
-  font-weight: 600;
-}
-
-.exec-value {
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--text);
-  margin-top: 8px;
-}
-
     .stat-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -1442,10 +1400,6 @@ box-shadow:
         <div class="stats-grid" id="stats-grid"></div>
 
         <div class="chart-row">
-          <div id="city-distribution"></div>
-          <div id="upcoming-milestones"></div>
-        </div>
-
           <div class="chart-card">
             <div class="chart-card-title">Estado de Proyectos</div>
             <div class="donut-wrap">
@@ -1453,14 +1407,6 @@ box-shadow:
               <div class="donut-legend" id="donut-legend"></div>
             </div>
           </div>
-
-          <div class="chart-row">
-
-           <div id="city-distribution"></div>
-
-           <div id="upcoming-milestones"></div>
-
-         </div>
           <!-- Avance por Proyecto: eliminado a petición del usuario -->
         </div>
       </div>
@@ -1938,12 +1884,7 @@ box-shadow:
               end: fmtExcelDate(endRaw),
               status: normalizeText(getField(p, 'status', 'Estado', 'ESTADO', 'STATUS', 'Status')) || 'Planificado',
               desc: normalizeText(getField(p, 'desc', 'Descripcion', 'DESCRIPCION')),
-              color: getStatusColor(normalizeText(getField(p, 'status', 'Estado', 'ESTADO', 'STATUS', 'Status')) || 'Planificado'),
-              department: normalizeText(getField(p, 'department', 'Departamento', 'DEPARTAMENTO')) || '',
-              hito: normalizeText(getField(p, 'hito', 'Hito', 'HITO')) || '' ,
-              fechaHito: fmtExcelDate(getField(p, 'fechaHito', 'FechaHito', 'FECHA_HITO')) || '',
-
-
+              color: getStatusColor(normalizeText(getField(p, 'status', 'Estado', 'ESTADO', 'STATUS', 'Status')) || 'Planificado')
             };
           });
         }
@@ -2094,73 +2035,10 @@ box-shadow:
     // ═══════════════════════════════════════════════════════════════
     // PÁGINA DE VISTA GENERAL
     // ═══════════════════════════════════════════════════════════════
-    
-    function getTotalProjects() {
-  return DB.projects.length;
-}
-
-function getTotalCities() {
-
-  return new Set(
-    DB.projects
-      .map(p => (p.city || '').trim())
-      .filter(c =>
-        c &&
-        c.toLowerCase() !== 'nacional'
-      )
-  ).size;
-
-}
-
-function getGlobalProgressPortfolio() {
-
-  if (!DB.projects.length) return 0;
-
-  return Math.round(
-    DB.projects.reduce(
-      (sum, p) => sum + getProjectProgress(p),
-      0
-    ) / DB.projects.length
-  );
-
-}
-
-function renderExecutiveKPIs() {
-
-  const el = document.getElementById('executive-kpis');
-
-  if (!el) return;
-
-  el.innerHTML = `
-    <div class="executive-kpis">
-
-      <div class="exec-card">
-        <div class="exec-title">TOTAL PROYECTOS</div>
-        <div class="exec-value">${getTotalProjects()}</div>
-      </div>
-
-      <div class="exec-card">
-        <div class="exec-title">AVANCE GLOBAL</div>
-        <div class="exec-value">${getGlobalProgressPortfolio()}%</div>
-      </div>
-
-      <div class="exec-card">
-        <div class="exec-title">CIUDADES ACTIVAS</div>
-        <div class="exec-value">${getTotalCities()}</div>
-      </div>
-
-    </div>
-  `;
-
-}
-
     function renderOverview() {
+      renderSidebar();
 
-  renderSidebar();
-
-  renderExecutiveKPIs();
-
-  const states = Object.keys(STATUS_COLORS);
+      const states = Object.keys(STATUS_COLORS);
       document.getElementById('stats-grid').innerHTML = states.map(state => {
         const projectsInState = DB.projects.filter(p => getStatusKey(p.status) === state);
         const count = projectsInState.length;
