@@ -4,41 +4,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Project Dashboard — Corporate</title>
+  <title>SGP — Corporate</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
     :root {
-      --navy: #0D1B2A;
-      --navy2: #112240;
-      --navy3: #0a1628;
-      --blue: #1565C0;
-      --blue2: #1976D2;
-      --cyan: #00B4D8;
-      --green: #00c853c8;
-      --yellow: #ffd500e4;
-      --red: #ff1745a1;
-      --orange: #FF6D00;
-      --bg: #080F1A;
-      --surface: #0D1B2A;
-      --card: #111F33;
-      --border: #1E3A5F;
-      --text: #E8F0FE;
-      --muted: #7B9CC4;
-      --accent: #00B4D8;
-      --shadow: rgba(0, 0, 0, 0.5);
-    }
+
+  --bg: #16181D;
+  --surface: #1F232A;
+  --card: #252A33;
+
+  --navy: #1F232A;
+  --navy2: #252A33;
+  --navy3: #2E3440;
+
+  --blue: #003DA5;
+  --blue2: #0057D9;
+
+  --cyan: #4F8CC9;
+
+  --green: #2EAF5D;
+  --yellow: #F2C94C;
+  --red: #D71920;
+  --orange: #F57C00;
+
+  --border: #39414D;
+
+  --text: #dfdfdf;
+  --muted: #A7B0BD;
+
+  --accent: #003DA5;
+
+  --shadow: rgba(0,0,0,.35);
+
+}
 
     body.light-mode {
-      --navy: #f0f4f8;
+      --navy: #ffffff;
       --navy2: #ffffff;
-      --navy3: #e2e8f0;
-      --bg: #f8fafc;
+      --navy3: #ffffff;
+      --bg: #f0f0f0;
       --surface: #ffffff;
-      --card: #ffffff;
-      --border: #e2e8f0;
-      --text: #1e293b;
+      --card: #e2e2e2;
+      --border: #929292;
+      --text: #6581b5;
       --muted: #64748b;
       --accent: #1565C0;
       --shadow: rgba(0, 0, 0, 0.05);
@@ -84,9 +94,17 @@
     }
 
     .logo-icon {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      width: 44px;
+      height: 44px;
+     background: linear-gradient(
+       135deg,
+       #002B7F 0%,
+       #0F52BA 50%,
+       #D71920 100%
+     );
+
+box-shadow:
+  0 6px 16px rgba(0,61,165,.25);
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -94,7 +112,7 @@
       font-family: 'Rajdhani', sans-serif;
       font-weight: 700;
       color: #fff;
-      font-size: 14px
+      font-size: 18px
     }
 
     .logo-text {
@@ -112,6 +130,14 @@
       text-transform: uppercase
     }
 
+    .logo-dept {
+      font-size: 8px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-top: 2px
+    }
+
     .topbar-right {
       display: flex;
       align-items: center;
@@ -121,10 +147,10 @@
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 12px;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
       font-weight: 600;
       letter-spacing: .5px;
       cursor: pointer;
@@ -140,7 +166,7 @@
 
     .btn-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 16px rgba(21, 101, 192, .5)
+      box-shadow: 0 4px 16px rgba(21, 101, 192, 0.767)
     }
 
     .btn-outline {
@@ -1313,10 +1339,11 @@
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="logo">
-      <div class="logo-icon">PD</div>
+      <div class="logo-icon">🏗️</div>
       <div>
-        <div class="logo-text">PROJECT DASHBOARD</div>
+        <div class="logo-text">SGP</div>
         <div class="logo-sub">Sistema de Gestión de Proyectos</div>
+        <div class="logo-dept">Dirección de Ingeniería y Mantenimiento</div>
       </div>
     </div>
     <div class="topbar-right">
@@ -1337,7 +1364,7 @@
     <div class="sidebar" id="sidebar">
       <div class="sidebar-label">Navegación</div>
       <div class="sidebar-item active" onclick="showPage('overview')" id="nav-overview">
-        <span class="icon">▦</span> Dashboard Global
+        <span class="icon">▦</span> Dashboard
       </div>
       <div class="sidebar-item" onclick="openProjectsPage()" id="nav-projects">
         <span class="icon">◈</span> Proyectos
@@ -1362,7 +1389,7 @@
       <div class="page active" id="page-overview">
         <div class="page-header">
           <div>
-            <div class="page-title">Dashboard Global</div>
+            <div class="page-title">Dashboard</div>
             <div class="page-sub">Resumen ejecutivo de todos los proyectos</div>
           </div>
         </div>
@@ -1410,7 +1437,7 @@
       <div class="page" id="page-projects">
         <div class="page-header">
           <div>
-            <div class="page-title">Proyectos</div>
+            <div class="page-title">Grupos de Proyectos</div>
             <div class="page-sub">Gestión completa de proyectos agrupados por tipo</div>
             <div class="page-context" id="project-subheader"></div>
           </div>
@@ -1629,7 +1656,7 @@
 
   <script>
     // ═══════════════════════════════════════════════════════════════
-    // CONFIGURATION
+    // CONFIGURACIÓN PRINCIPAL
     // ═══════════════════════════════════════════════════════════════
     const CONFIG_SYNC_URL = 'https://script.google.com/macros/s/AKfycbzIuTtZH9-BrAOzv4GAtnFKAMmRASs9SnWSxPYPIaBd7ByxKwXvbXdvgIzwtIyzIQYt/exec';
 
@@ -1655,7 +1682,7 @@
       { key: 'Otros', color: '#78909C' }
     ];
 
-    // Current selected group; null = show groups overview
+    // Grupo seleccionado actual; nulo = mostrar vista general de los grupos
     let currentGroup = null;
 
     function getGroups() {
@@ -1743,7 +1770,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // DATA STORE  (persisted via localStorage)
+    // ALMACENAMIENTO DE DATOS (persistido a través de localStorage)
     // ═══════════════════════════════════════════════════════════════
     const STORE_KEY = 'pd_v2_data';
     let DB = { projects: [], activities: [] };
@@ -1753,7 +1780,7 @@
         const raw = localStorage.getItem(STORE_KEY);
         if (raw) { DB = JSON.parse(raw); }
         if (!raw && !CONFIG_SYNC_URL) {
-          // Set sample data only when no sync backend is configured
+          // Establecer datos de muestra solo cuando no haya un backend de sincronización configurado
           DB = {
             projects: [
               { id: 'PROJ-001', name: 'REEMPLAZO SERPENTINES CLIMATEC', client: 'CLIMATEC S.A.', city: 'Bogotá', pdvCode: 'PDV-001', pdvName: 'Centro Comercial Andino', manager: 'Ing. Nelson Garcia', leader: 'Andrés Guerra', start: '2026-02-02', end: '2026-03-24', status: 'Ejecución', desc: 'Reemplazo completo de serpentines en planta de refrigeración', color: '1565C0' },
@@ -1796,7 +1823,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // THEME MANAGEMENT
+    // GESTIÓN DE TEMAS
     // ═══════════════════════════════════════════════════════════════
     function toggleTheme() {
       const body = document.body;
@@ -1842,7 +1869,7 @@
             return {
               id: normalizeText(getField(p, 'id', 'ID', 'ID_PROYECTO')),
               name: normalizeText(getField(p, 'name', 'Nombre', 'NOMBRE_PROYECTO')) || 'Sin Nombre',
-              // Prefer explicit tipo fields, fallback to previous CLIENTE for compat
+              // Preferir campos de "tipo" explícitos, usar CLIENTE anterior como alternativa por compatibilidad
               type: rawType || rawClient,
               client: rawClient,
               city: normalizeText(getField(p, 'city', 'Ciudad', 'CIUDAD')),
@@ -1907,7 +1934,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // UTILITIES
+    // UTILIDADES
     // ═══════════════════════════════════════════════════════════════
     function parseDate(value) {
       if (value instanceof Date) return isNaN(value) ? null : value;
@@ -1950,7 +1977,7 @@
     let currentProjId = null, editingActId = null, editingProjId = null;
 
     // ═══════════════════════════════════════════════════════════════
-    // NAVIGATION
+    // NAVEGACIÓN
     // ═══════════════════════════════════════════════════════════════
     function showPage(pageId, projId = null) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1970,7 +1997,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // SIDEBAR
+    // BARRA LATERAL-SIDEBAR
     // ═══════════════════════════════════════════════════════════════
     function renderSidebar() {
       const list = document.getElementById('proj-sidebar-list');
@@ -1984,11 +2011,11 @@
       <span class="proj-badge" style="background:${statusColor}">${pct}%</span>
     </div>`;
       }).join('');
-      // render project submenu
+      // renderizar submenú del proyecto
       renderProjectSidebarSubmenu();
     }
 
-    // Render collapsible submenu under 'Proyectos' in the sidebar with dynamic groups
+    // Renderizar submenú desplegable bajo 'Proyectos' en la barra lateral con grupos dinámicos
     function renderProjectSidebarSubmenu() {
       const container = document.getElementById('nav-projects-sub');
       if (!container) return;
@@ -2003,7 +2030,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // OVERVIEW PAGE
+    // PÁGINA DE VISTA GENERAL
     // ═══════════════════════════════════════════════════════════════
     function renderOverview() {
       renderSidebar();
@@ -2032,9 +2059,9 @@
         `;
       }).join('');
 
-      // Donut chart
+      // Gráfico de dona
       renderDonut();
-      // Bar chart
+      // Gráfico de barras
       renderBarChart();
     }
 
@@ -2071,7 +2098,7 @@
         });
       }
 
-      // hole
+      // agujero / hueco del donut
       paths += `<circle cx="${cx}" cy="${cy}" r="${r - sw}" fill="var(--card)"/>`;
       paths += `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" fill="var(--text)" font-size="13" font-weight="700" font-family="Rajdhani">${total}</text>`;
       svg.innerHTML = paths;
@@ -2160,7 +2187,7 @@
         return;
       }
 
-      // Find date range
+      // Buscar rango de fechas
       let allDates = [];
       projectsToShow.forEach(p => {
         const startDate = parseDate(p.start);
@@ -2178,7 +2205,7 @@
       let minDate = new Date(Math.min(...allDates));
       let maxDate = new Date(Math.max(...allDates));
 
-      // Normalize dates to start of day
+      // Normalizar fechas al inicio del día
       minDate = new Date(minDate.getFullYear(), minDate.getMonth(), minDate.getDate());
       maxDate = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate());
 
@@ -2196,12 +2223,12 @@
         }
       } else if (scale === 'week') {
         cellWidth = 70;
-        // Normalize to Monday
+        // Normalizar al lunes
         const day = curr.getDay();
         const diff = curr.getDate() - day + (day === 0 ? -6 : 1);
         curr.setDate(diff);
-        curr.setDate(curr.getDate() - 7); // 1 week buffer
-        maxDate.setDate(maxDate.getDate() + 14); // 2 weeks buffer
+        curr.setDate(curr.getDate() - 7); // Margen de 1 semana
+        maxDate.setDate(maxDate.getDate() + 14); // Margen de 2 semanas
         while (curr <= maxDate) {
           units.push(new Date(curr));
           curr.setDate(curr.getDate() + 7);
@@ -2209,21 +2236,21 @@
       } else if (scale === 'month') {
         cellWidth = 100;
         curr = new Date(curr.getFullYear(), curr.getMonth(), 1);
-        curr.setMonth(curr.getMonth() - 1); // 1 month buffer
-        maxDate.setMonth(maxDate.getMonth() + 3); // 3 months buffer
+        curr.setMonth(curr.getMonth() - 1); // Margen de 1 mes
+        maxDate.setMonth(maxDate.getMonth() + 3); // Margen de 3 meses
         while (curr <= maxDate) {
           units.push(new Date(curr));
           curr.setMonth(curr.getMonth() + 1);
         }
       }
 
-      // Final minDate used for offsets
+      // Fecha mínima final utilizada para los desplazamientos
       minDate = new Date(units[0]);
       container.style.setProperty('--gantt-cell-width', cellWidth + 'px');
 
       const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
-      // Render Header
+      // Renderizar encabezado-Header
       header.innerHTML = `
     <div class="gantt-label-col">Proyecto / Tipo</div>
     <div class="gantt-days-scroll">
@@ -2249,7 +2276,7 @@
     </div>
   `;
 
-      // Render Body
+      // Renderizar cuerpo-Body
       body.innerHTML = projectsToShow.map(p => {
         const start = parseDate(p.start);
         const end = parseDate(p.end);
@@ -2303,12 +2330,12 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // PROJECTS PAGE
+    // PROJECTS PAGE-PÁGINA DE PROYECTOS
     // ═══════════════════════════════════════════════════════════════
     function renderProjects() {
       renderSidebar();
       const grid = document.getElementById('proj-grid');
-      // If no group selected, show groups overview
+      // Si no hay ningún grupo seleccionado, mostrar la vista general de los grupos
       if (!currentGroup) return renderProjectGroups();
 
       const groupTitle = currentGroup;
@@ -2362,7 +2389,7 @@
       if (!DB.projects.length) grid.innerHTML = `<div style="color:var(--muted);font-size:14px;padding:40px">No hay proyectos. Crea uno nuevo o importa un Excel.</div>`;
     }
 
-    // Dropdown populate & toggle
+    // Poblar y alternar menú desplegable
     function populateGroupDropdown() {
       const el = document.getElementById('group-dropdown-list'); if (!el) return;
       const groups = getGroups();
@@ -2387,7 +2414,7 @@
       if (!el) return;
       const groups = getGroups();
       el.innerHTML = groups.map(g => `<button class="btn btn-outline group-tab" onclick="selectGroup('${g.key}')" data-group="${g.key}">${g.key}</button>`).join('');
-      // active styling
+      // Estilo activo / Estilos activos
       Array.from(el.querySelectorAll('button')).forEach(b => { if (normalizeGroupName(currentGroup) === normalizeGroupName(b.dataset.group)) b.classList.add('active'); });
       populateGroupDropdown();
     }
@@ -2399,6 +2426,15 @@
       if (pageSubheader) pageSubheader.innerHTML = '';
       const grid = document.getElementById('proj-grid');
       const groups = getGroups();
+      const groupIcons = {
+        "PDV Nuevos": "🏬",
+        "Proyectos Especiales": "💎",
+        "Intervenciones": "🧱",
+        "Desmantelamientos": "⚒️",
+        "Reposiciones": "⚙️",
+        "Energizaciones": "⚡️",
+        "Otros": "🔩"
+};
       grid.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:24px">${groups.map(g => {
         const projects = DB.projects.filter(p => normalizeGroupName(p.type || p.client) === normalizeGroupName(g.key));
         const statusCounts = Object.keys(STATUS_COLORS).reduce((acc, status) => { acc[status] = 0; return acc; }, {});
@@ -2408,7 +2444,7 @@
         const statusHtml = Object.keys(STATUS_COLORS).map(status => `<div class="group-status-pill"><span>${status}</span><strong>${statusCounts[status] || 0}</strong></div>`).join('');
         return `<div class="group-card" style="padding:18px;border-radius:12px;background:var(--card);border:1px solid ${g.color}22;cursor:pointer" onclick="selectGroup('${g.key}')">
           <div class="group-card-top">
-            <div class="group-card-badge" style="background:${g.color};">${String(g.key)[0] || ''}</div>
+            <div class="group-card-badge" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);">${groupIcons[g.key] || "📁"}</div>
             <div>
               <div class="group-card-title">${g.key}</div>
               <div class="group-card-sub">${g.count} proyectos</div>
@@ -2432,7 +2468,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // PROJECT DETAIL PAGE
+    // PROJECT DETAIL PAGE-PÁGINA DE DETALLE DEL PROYECTO
     // ═══════════════════════════════════════════════════════════════
     function renderProjectDetail(projId) {
       renderSidebar();
@@ -2501,7 +2537,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // MODALS
+    // MODALS-VENTANAS MODALES / MODALES
     // ═══════════════════════════════════════════════════════════════
     function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
@@ -2851,7 +2887,7 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // DRAG & DROP
+    // DRAG & DROP-ARRASTRAR Y SOLTAR
     // ═══════════════════════════════════════════════════════════════
     const dz = document.getElementById('drop-zone');
     dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover') });
@@ -2863,13 +2899,13 @@
     });
 
     // ═══════════════════════════════════════════════════════════════
-    // INIT
+    // INIT-INICIO
     // ═══════════════════════════════════════════════════════════════
     loadTheme();
     loadDB();
     renderOverview();
 
-    // Auto-sync on load if URL is provided
+    // Sincronización automática al cargar si se proporciona la URL
     if (CONFIG_SYNC_URL) {
       syncWithGoogleSheets();
     }
