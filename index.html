@@ -2872,7 +2872,7 @@
         DB.projects.push(obj);
         toast('Proyecto creado ✓');
       }
-      saveDB(); closeModal('modal-project'); renderSidebar();
+      saveDB(); pushToGoogleSheets(); closeModal('modal-project'); renderSidebar();
       if (document.getElementById('page-projects').classList.contains('active')) renderProjects();
       if (document.getElementById('page-overview').classList.contains('active')) renderOverview();
     }
@@ -2881,7 +2881,7 @@
       if (!confirm('¿Eliminar este proyecto y todas sus actividades?')) return;
       DB.projects = DB.projects.filter(p => p.id !== projId);
       DB.activities = DB.activities.filter(a => a.projId !== projId);
-      saveDB(); renderSidebar(); renderProjects(); toast('Proyecto eliminado');
+      saveDB(); pushToGoogleSheets(); renderSidebar(); renderProjects(); toast('Proyecto eliminado');
     }
 
     function openNewActivityModal() {
@@ -2948,13 +2948,13 @@
         DB.activities.push(obj);
         toast('Actividad creada ✓');
       }
-      saveDB(); closeModal('modal-activity'); renderProjectDetail(currentProjId); renderSidebar();
+      saveDB(); pushToGoogleSheets(); closeModal('modal-activity'); renderProjectDetail(currentProjId); renderSidebar();
     }
 
     function deleteActivity(actId) {
       if (!confirm('¿Eliminar esta actividad?')) return;
       DB.activities = DB.activities.filter(a => a.id !== actId);
-      saveDB(); renderProjectDetail(currentProjId); renderSidebar(); toast('Actividad eliminada');
+      saveDB(); pushToGoogleSheets(); renderProjectDetail(currentProjId); renderSidebar(); toast('Actividad eliminada');
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -3026,7 +3026,7 @@
               if (idx > -1) DB.activities[idx] = obj; else { DB.activities.push(obj); importedAct++; }
             });
           }
-          saveDB(); renderOverview(); renderSidebar();
+          saveDB(); pushToGoogleSheets(); renderOverview(); renderSidebar();
           toast(`Importado: ${DB.projects.length} proyectos, ${DB.activities.length} actividades`);
           showPage('overview');
         } catch (err) { toast('Error al importar: ' + err.message, 'error'); }
