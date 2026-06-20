@@ -1686,15 +1686,15 @@
         <div class="stats-grid" id="detail-stats"></div>
         <div class="gantt-container">
           <div class="gantt-header-row">
-            <span class="gantt-title" id="detail-gantt-title">Cronograma de Actividades</span>
-            <button class="btn btn-primary btn-sm" onclick="openNewActivityModal()">+ Actividad</button>
+            <span class="gantt-title" id="detail-gantt-title">Cronograma de Hitos</span>
+            <button class="btn btn-primary btn-sm" onclick="openNewActivityModal()">+ Hito</button>
           </div>
           <div class="gantt-scroll">
             <table class="gantt">
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Actividad</th>
+                  <th>Hito</th>
                   <th>Prioridad</th>
                   <th>Encargado</th>
                   <th>Estado</th>
@@ -1828,21 +1828,21 @@
   <div class="modal-overlay" id="modal-activity">
     <div class="modal">
       <div class="modal-header">
-        <span class="modal-title" id="modal-act-title">Nueva Actividad</span>
+        <span class="modal-title" id="modal-act-title">Nuevo Hito</span>
         <button class="modal-close" onclick="closeModal('modal-activity')">✕</button>
       </div>
       <div class="form-grid">
-        <div class="form-group"><label class="form-label">ID Actividad</label><input class="form-input" id="ai-id"
-            placeholder="ACT-012" /></div>
+        <div class="form-group"><label class="form-label">ID Hito</label><input class="form-input" id="ai-id"
+            placeholder="HITO-012" /></div>
         <div class="form-group"><label class="form-label">Prioridad (1-5)</label><input class="form-input" id="ai-prio"
             type="number" min="1" max="5" value="3" /></div>
-        <div class="form-group form-full"><label class="form-label">Nombre de la Actividad</label><input
+        <div class="form-group form-full"><label class="form-label">Nombre del Hito</label><input
             class="form-input" id="ai-name" placeholder="Ej: Instalación de ductos principales" /></div>
         <div class="form-group"><label class="form-label">Jefe de Proyecto</label><input class="form-input"
             id="ai-manager" /></div>
         <div class="form-group"><label class="form-label">Líder de Proyecto</label><input class="form-input"
             id="ai-leader" /></div>
-        <div class="form-group form-full"><label class="form-label">Encargado de Actividad</label><input
+        <div class="form-group form-full"><label class="form-label">Responsable del Hito</label><input
             class="form-input" id="ai-enc" placeholder="Nombre (Empresa)" /></div>
         <div class="form-group"><label class="form-label">Estado</label>
           <select class="form-select" id="ai-status">
@@ -1875,7 +1875,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="closeModal('modal-activity')">Cancelar</button>
-        <button class="btn btn-primary" onclick="saveActivity()">Guardar Actividad</button>
+        <button class="btn btn-primary" onclick="saveActivity()">Guardar Hito</button>
       </div>
     </div>
   </div>
@@ -2651,7 +2651,7 @@
         <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%;background:${color}"></div></div>
       </div>
       <div class="proj-footer">
-        <span class="acts-count">📋 ${acts.length} actividades — ${done} completadas</span>
+        <span class="acts-count">📋 ${acts.length} hitos — ${done} completadas</span>
         <div style="display:flex;gap:6px" onclick="event.stopPropagation()">
           <button class="btn btn-outline btn-sm" onclick="openEditProjectModal('${p.id}')">✏️</button>
           <button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">🗑</button>
@@ -2764,7 +2764,7 @@
     <div class="actions-row">
       <button class="btn btn-outline btn-sm btn-back" onclick="showPage('projects')" aria-label="Volver a proyectos">←</button>
       <button class="btn btn-outline" onclick="openEditProjectModal('${p.id}')">✏️ Editar Proyecto</button>
-      <button class="btn btn-primary" onclick="openNewActivityModal()">+ Actividad</button>
+      <button class="btn btn-primary" onclick="openNewActivityModal()">+ Hito</button>
       <button class="btn btn-success btn-sm" onclick="exportProjectExcel('${p.id}')">↓ Exportar</button>
     </div>`;
 
@@ -2806,7 +2806,7 @@
     </td>
   </tr>`).join('');
 
-      if (!acts.length) tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:30px">Sin actividades. Agrega la primera.</td></tr>`;
+      if (!acts.length) tbody.innerHTML = `<tr><td colspan="11" style="text-align:center;color:var(--muted);padding:30px">Sin hitos. Agrega el primero.</td></tr>`;
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -2878,7 +2878,7 @@
     }
 
     function deleteProject(projId) {
-      if (!confirm('¿Eliminar este proyecto y todas sus actividades?')) return;
+      if (!confirm('¿Eliminar este proyecto y todos sus hitos?')) return;
       DB.projects = DB.projects.filter(p => p.id !== projId);
       DB.activities = DB.activities.filter(a => a.projId !== projId);
       saveDB(); pushToGoogleSheets(); renderSidebar(); renderProjects(); toast('Proyecto eliminado');
@@ -2886,7 +2886,7 @@
 
     function openNewActivityModal() {
       editingActId = null;
-      document.getElementById('modal-act-title').textContent = 'Nueva Actividad';
+      document.getElementById('modal-act-title').textContent = 'Nuevo Hito';
       const p = DB.projects.find(x => x.id === currentProjId);
       ['ai-id', 'ai-name', 'ai-enc', 'ai-obs'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('ai-prio').value = 3;
@@ -2905,7 +2905,7 @@
       const a = DB.activities.find(x => x.id === actId);
       if (!a) return;
       editingActId = actId;
-      document.getElementById('modal-act-title').textContent = 'Editar Actividad';
+      document.getElementById('modal-act-title').textContent = 'Editar Hito';
       document.getElementById('ai-id').value = a.id;
       document.getElementById('ai-name').value = a.name;
       document.getElementById('ai-prio').value = a.priority || 3;
@@ -2942,19 +2942,19 @@
       if (editingActId) {
         const idx = DB.activities.findIndex(a => a.id === editingActId);
         if (idx > -1) DB.activities[idx] = obj;
-        toast('Actividad actualizada ✓');
+        toast('Hito actualizado ✓');
       } else {
         if (DB.activities.find(a => a.id === id)) { toast('ID ya existe', 'error'); return; }
         DB.activities.push(obj);
-        toast('Actividad creada ✓');
+        toast('Hito creado ✓');
       }
       saveDB(); pushToGoogleSheets(); closeModal('modal-activity'); renderProjectDetail(currentProjId); renderSidebar();
     }
 
     function deleteActivity(actId) {
-      if (!confirm('¿Eliminar esta actividad?')) return;
+      if (!confirm('¿Eliminar este hito?')) return;
       DB.activities = DB.activities.filter(a => a.id !== actId);
-      saveDB(); pushToGoogleSheets(); renderProjectDetail(currentProjId); renderSidebar(); toast('Actividad eliminada');
+      saveDB(); pushToGoogleSheets(); renderProjectDetail(currentProjId); renderSidebar(); toast('Hito eliminado');
     }
 
     // ═══════════════════════════════════════════════════════════════
@@ -3027,7 +3027,7 @@
             });
           }
           saveDB(); pushToGoogleSheets(); renderOverview(); renderSidebar();
-          toast(`Importado: ${DB.projects.length} proyectos, ${DB.activities.length} actividades`);
+          toast(`Importado: ${DB.projects.length} proyectos, ${DB.activities.length} hitos`);
           showPage('overview');
         } catch (err) { toast('Error al importar: ' + err.message, 'error'); }
       };
@@ -3066,15 +3066,15 @@
       }));
       const ws1 = XLSX.utils.json_to_sheet(projData);
       XLSX.utils.book_append_sheet(wb, ws1, 'PROYECTOS');
-      // ACTIVIDADES
+      // HITOS
       const actData = DB.activities.map(a => ({
-        'ID_ACTIVIDAD': a.id, 'ID_PROYECTO': a.projId, 'ACTIVIDAD': a.name,
+        'ID_HITO': a.id, 'ID_PROYECTO': a.projId, 'HITO': a.name,
         'PRIORIDAD': a.priority, 'JEFE_PROYECTO': a.manager, 'LIDER_PROYECTO': a.leader,
         'ENCARGADO': a.enc, 'ESTADO': a.status, 'FECHA_INICIO': a.start, 'FECHA_FIN': a.end,
         'PORCENTAJE_AVANCE': a.pct, 'CUMPLIMIENTO': a.cum, 'OBSERVACIONES': a.obs
       }));
       const ws2 = XLSX.utils.json_to_sheet(actData);
-      XLSX.utils.book_append_sheet(wb, ws2, 'ACTIVIDADES');
+      XLSX.utils.book_append_sheet(wb, ws2, 'HITOS');
 
       // GANTT SHEET
       generateGanttSheet(wb);
@@ -3103,7 +3103,7 @@
       }
 
       const rows = [];
-      const headerDays = ['Actividad', 'Proyecto', 'Estado', ...days.map(d => d.getDate())];
+      const headerDays = ['Hito', 'Proyecto', 'Estado', ...days.map(d => d.getDate())];
       rows.push(headerDays);
 
       actsToExport.forEach(a => {
@@ -3147,10 +3147,10 @@
       }]);
       XLSX.utils.book_append_sheet(wb, ws1, 'PROYECTO');
       const ws2 = XLSX.utils.json_to_sheet(acts.map(a => ({
-        'ID': a.id, 'ACTIVIDAD': a.name, 'PRIORIDAD': a.priority, 'ENCARGADO': a.enc,
+        'ID': a.id, 'HITO': a.name, 'PRIORIDAD': a.priority, 'ENCARGADO': a.enc,
         'ESTADO': a.status, 'INICIO': a.start, 'FIN': a.end, 'AVANCE': a.pct + '%', 'CUMPLIMIENTO': a.cum, 'OBS': a.obs
       })));
-      XLSX.utils.book_append_sheet(wb, ws2, 'ACTIVIDADES');
+      XLSX.utils.book_append_sheet(wb, ws2, 'HITOS');
 
       // Add Gantt for this project specifically
       generateGanttSheet(wb, acts);
