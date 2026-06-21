@@ -1067,9 +1067,15 @@
       padding: 20px
     }
 
+    .chart-card--scroll {
+      display: flex;
+      flex-direction: column;
+      min-height: 100%
+    }
+
     .chart-card-title {
       font-family: 'Rajdhani', sans-serif;
-      font-size: 15px;
+      font-size: 20px;
       font-weight: 600;
       color: #fff;
       margin-bottom: 16px
@@ -1092,7 +1098,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 12px;
+      font-size: 15px;
       color: var(--muted)
     }
 
@@ -1101,6 +1107,52 @@
       height: 10px;
       border-radius: 50%;
       flex-shrink: 0
+    }
+
+    .city-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .city-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, .06);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .02);
+    }
+
+    .city-name {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .city-count {
+      min-width: 34px;
+      text-align: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0, 61, 165, .2);
+      border: 1px solid rgba(0, 61, 165, .35);
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .city-empty {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 8px 2px;
     }
 
     .legend-val {
@@ -1631,7 +1683,10 @@
               <div class="donut-legend" id="donut-legend"></div>
             </div>
           </div>
-          <!-- Avance por Proyecto: eliminado a petición del usuario -->
+          <div class="chart-card chart-card--scroll">
+            <div class="chart-card-title">Proyectos por Ciudad</div>
+            <div class="city-breakdown" id="city-breakdown"></div>
+          </div>
         </div>
       </div>
 
@@ -1695,14 +1750,11 @@
                 <tr>
                   <th>#</th>
                   <th>Hito</th>
-                  <th>Prioridad</th>
-                  <th>Encargado</th>
                   <th>Estado</th>
                   <th>Inicio</th>
                   <th>Fin</th>
                   <th>Días</th>
                   <th style="min-width:200px">Avance</th>
-                  <th>Cumplimiento</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -1834,16 +1886,12 @@
       <div class="form-grid">
         <div class="form-group"><label class="form-label">ID Hito</label><input class="form-input" id="ai-id"
             placeholder="HITO-012" /></div>
-        <div class="form-group"><label class="form-label">Prioridad (1-5)</label><input class="form-input" id="ai-prio"
-            type="number" min="1" max="5" value="3" /></div>
         <div class="form-group form-full"><label class="form-label">Nombre del Hito</label><input
             class="form-input" id="ai-name" placeholder="Ej: Instalación de ductos principales" /></div>
         <div class="form-group"><label class="form-label">Jefe de Proyecto</label><input class="form-input"
             id="ai-manager" /></div>
         <div class="form-group"><label class="form-label">Líder de Proyecto</label><input class="form-input"
             id="ai-leader" /></div>
-        <div class="form-group form-full"><label class="form-label">Responsable del Hito</label><input
-            class="form-input" id="ai-enc" placeholder="Nombre (Empresa)" /></div>
         <div class="form-group"><label class="form-label">Estado</label>
           <select class="form-select" id="ai-status">
             <option>Presupuesto</option>
@@ -1851,14 +1899,6 @@
             <option>Ejecución</option>
             <option>Entrega</option>
             <option>En espera</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label">Cumplimiento</label>
-          <select class="form-select" id="ai-cum">
-            <option>PENDIENTE</option>
-            <option>EN PROGRESO</option>
-            <option>COMPLETADO</option>
-            <option>CANCELADO</option>
           </select>
         </div>
         <div class="form-group"><label class="form-label">Fecha de Inicio</label><input class="form-input" id="ai-start"
@@ -1943,6 +1983,15 @@
 
     function normalizeText(value) {
       return value == null ? '' : String(value).trim();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
     function normalizeKey(key) {
@@ -2119,15 +2168,11 @@
             id: a.id || a.ID || a.ID_ACTIVIDAD || '',
             projId: a.projId || a.ProyectoID || a.ID_PROYECTO || '',
             name: a.name || a.Nombre || a.ACTIVIDAD || 'Sin Nombre',
-            priority: a.priority || a.Prioridad || a.PRIORIDAD || 3,
-            manager: a.manager || a.Responsable || a.JEFE_PROYECTO || '',
-            leader: a.leader || a.Lider || a.LIDER_PROYECTO || '',
             enc: a.enc || a.Encargado || a.ENCARGADO || a.leader || '',
             status: a.status || a.Estado || a.ESTADO || a.STATUS || a.Status || 'Planificado',
             start: fmtExcelDate(a.start || a.Inicio || a.FECHA_INICIO || ''),
             end: fmtExcelDate(a.end || a.Fin || a.FECHA_FIN || ''),
             pct: a.pct !== undefined ? a.pct : (a.progreso !== undefined ? a.progreso : (a.Progreso !== undefined ? a.Progreso : (a.porcentaje_avance !== undefined ? a.porcentaje_avance : (a.PORCENTAJE_AVANCE || 0)))),
-            cum: a.cum || a.Cumplimiento || a.cumplimiento || a.CUMPLIMIENTO || 'PENDIENTE',
             obs: a.obs || a.Observaciones || a.OBSERVACIONES || ''
           }));
         }
@@ -2204,6 +2249,8 @@
       setTimeout(() => el.classList.remove('show'), 3000);
     }
     let currentProjId = null, editingActId = null, editingProjId = null;
+
+    
 
     // ═══════════════════════════════════════════════════════════════
     // NAVEGACIÓN
@@ -2304,6 +2351,43 @@
   `;
     }
 
+    function renderCityBreakdown() {
+      const el = document.getElementById('city-breakdown');
+      if (!el) return;
+
+      const cityMap = new Map();
+
+      DB.projects.forEach(p => {
+        const rawCity = normalizeText(p.city);
+        if (!rawCity) return;
+
+        const key = rawCity.toLowerCase();
+        if (!cityMap.has(key)) {
+          cityMap.set(key, {
+            label: key === 'nacional' ? 'Nacional' : rawCity,
+            count: 0
+          });
+        }
+
+        cityMap.get(key).count += 1;
+      });
+
+      const cities = Array.from(cityMap.values())
+        .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }));
+
+      if (!cities.length) {
+        el.innerHTML = '<div class="city-empty">No hay ciudades registradas.</div>';
+        return;
+      }
+
+      el.innerHTML = cities.map(city => `
+        <div class="city-row">
+          <div class="city-name">${escapeHtml(city.label)}</div>
+          <div class="city-count">${city.count}</div>
+        </div>
+      `).join('');
+    }
+
     function renderOverview() {
       renderSidebar();
       renderExecutiveKPIs();
@@ -2334,6 +2418,7 @@
 
       // Gráfico de dona
       renderDonut();
+      renderCityBreakdown();
       // Gráfico de barras
       renderBarChart();
     }
@@ -2787,8 +2872,6 @@
       tbody.innerHTML = acts.map((a, i) => `<tr>
     <td style="color:var(--muted);font-size:11px">${i + 1}</td>
     <td><div class="act-name">${a.name}<small>${a.id}</small></div></td>
-    <td><span style="font-size:11px;color:var(--muted)">P${a.priority || 3}</span></td>
-    <td style="font-size:11px;color:var(--muted)">${a.enc || '—'}</td>
     <td>${statusBadge(a.status)}</td>
     <td style="color:var(--muted);font-size:11px">${fmtDate(a.start)}</td>
     <td style="color:var(--muted);font-size:11px">${fmtDate(a.end)}</td>
@@ -2799,7 +2882,6 @@
         <span class="gantt-bar-label">${a.pct}%</span>
       </div>
     </td>
-    <td>${statusBadge(a.cum)}</td>
     <td style="white-space:nowrap">
       <button class="btn btn-outline btn-sm" onclick="openEditActivityModal('${a.id}')">✏️</button>
       <button class="btn btn-danger btn-sm" onclick="deleteActivity('${a.id}')">🗑</button>
@@ -2888,12 +2970,8 @@
       editingActId = null;
       document.getElementById('modal-act-title').textContent = 'Nuevo Hito';
       const p = DB.projects.find(x => x.id === currentProjId);
-      ['ai-id', 'ai-name', 'ai-enc', 'ai-obs'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('ai-prio').value = 3;
-      document.getElementById('ai-manager').value = p?.manager || '';
-      document.getElementById('ai-leader').value = p?.leader || '';
+      ['ai-id', 'ai-name', 'ai-obs'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('ai-status').value = 'Planificado';
-      document.getElementById('ai-cum').value = 'PENDIENTE';
       document.getElementById('ai-start').value = p?.start || '';
       document.getElementById('ai-end').value = p?.end || '';
       document.getElementById('ai-pct').value = 0;
@@ -2908,12 +2986,9 @@
       document.getElementById('modal-act-title').textContent = 'Editar Hito';
       document.getElementById('ai-id').value = a.id;
       document.getElementById('ai-name').value = a.name;
-      document.getElementById('ai-prio').value = a.priority || 3;
       document.getElementById('ai-manager').value = a.manager || '';
       document.getElementById('ai-leader').value = a.leader || '';
-      document.getElementById('ai-enc').value = a.enc || '';
       document.getElementById('ai-status').value = a.status || 'Planificado';
-      document.getElementById('ai-cum').value = a.cum || 'PENDIENTE';
       document.getElementById('ai-start').value = a.start || '';
       document.getElementById('ai-end').value = a.end || '';
       document.getElementById('ai-pct').value = a.pct || 0;
@@ -2926,18 +3001,19 @@
       const id = document.getElementById('ai-id').value.trim();
       const name = document.getElementById('ai-name').value.trim();
       if (!id || !name) { toast('ID y Nombre son requeridos', 'error'); return; }
+      const existing = editingActId ? DB.activities.find(a => a.id === editingActId) : null;
       const obj = {
         id, projId: currentProjId, name,
-        priority: +document.getElementById('ai-prio').value,
         manager: document.getElementById('ai-manager').value.trim(),
         leader: document.getElementById('ai-leader').value.trim(),
-        enc: document.getElementById('ai-enc').value.trim(),
         status: document.getElementById('ai-status').value,
-        cum: document.getElementById('ai-cum').value,
         start: document.getElementById('ai-start').value,
         end: document.getElementById('ai-end').value,
         pct: +document.getElementById('ai-pct').value,
         obs: document.getElementById('ai-obs').value.trim(),
+        priority: existing?.priority ?? 3,
+        enc: existing?.enc ?? '',
+        cum: existing?.cum ?? 'PENDIENTE',
       };
       if (editingActId) {
         const idx = DB.activities.findIndex(a => a.id === editingActId);
