@@ -2122,7 +2122,7 @@
             priority: a.priority || a.Prioridad || a.PRIORIDAD || 3,
             manager: a.manager || a.Responsable || a.JEFE_PROYECTO || '',
             leader: a.leader || a.Lider || a.LIDER_PROYECTO || '',
-            enc: a.enc || a.Encargado || a.ENCARGADO || '',
+            enc: a.enc || a.Encargado || a.ENCARGADO || a.leader || '',
             status: a.status || a.Estado || a.ESTADO || a.STATUS || a.Status || 'Planificado',
             start: fmtExcelDate(a.start || a.Inicio || a.FECHA_INICIO || ''),
             end: fmtExcelDate(a.end || a.Fin || a.FECHA_FIN || ''),
